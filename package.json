@@ -1,0 +1,31 @@
+{
+  "name": "cozy-clearance",
+  "version": "0.0.1",
+  "description": "cozy-clearance provides clearance management",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test.coffee --reporter spec --compilers coffee:coffee-script/register --colors",
+    "makedoc": "mocha test.coffee --reporter doc --compilers coffee:coffee-script/register | cat docs/head.html - docs/tail.html > ./docs/index.html",
+    "build": "coffee --compile index.coffee",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mycozycloud/cozy-clearance"
+  },
+  "keywords": [
+    "cozy",
+    "clearance"
+  ],
+  "author": "Cozy",
+  "license": "see LICENSE",
+  "readmeFilename": "README.md",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "coffee-script": "= 1.4.0",
+    "mocha": "~1.12.0",
+    "should": "~1.2.0",
+    "chai": "~1.7.2"
+  }
+}
