@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>cozy-clearance</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <style>
+      body {
+        font: 16px/1.6 "Helvetica Neue", arial, sans-serif;
+        padding: 60px;
+      }
+      pre { font-size: 14px; line-height: 1.3 }
+      code .init { color: #2F6FAD }
+      code .string { color: #5890AD }
+      code .keyword { color: #8A6343 }
+      code .number { color: #2F6FAD }
+    </style>
+    <script>
+      $(function(){
+        $('code').each(function(){
+          $(this).html(highlight($(this).text()));
+        });
+      });
+
+      function highlight(js) {
+        return js
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/\/\/(.*)/gm, '<span class="comment">//$1</span>')
+          .replace(/('.*')/gm, '<span class="string">$1</span>')
+          .replace(/(\d+\.\d+)/gm, '<span class="number">$1</span>')
+          .replace(/(\d+)/gm, '<span class="number">$1</span>')
+          .replace(/\bnew *(\w+)/gm, '<span class="keyword">new</span> <span class="init">$1</span>')
+          .replace(/\b(function|new|throw|return|var|if|else)\b/gm, '<span class="keyword">$1</span>')
+      }
+    </script>
+  </head>
+  <body>
+    <h1>cozy-clearance</h1>
+    <p>The cozy clearance module.</p>    <section class="suite">
+      <h1>Basics</h1>
+      <dl>
+        <dt>cozy-clearance exports the functions</dt>
+        <dd><pre><code>should.exist(clearance.check);
+should.exist(clearance.make);
+should.exist(clearance.add);
+should.exist(clearance.revoke);</code></pre></dd>
+        <dt>it works on americano-cozy models</dt>
+        <dd><pre><code>var Model;
+Model = americano.getModel('test', {
+  name: String,
+  clearance: function(x) {
+    return x;
+  }
+});
+Model.create({
+  name: 'testdoc'
+}, function(err, created) {
+  model = created;
+  return done(err);
+});</code></pre></dd>
+      </dl>
+    </section>
+    <section class="suite">
+      <h1>The clearance object</h1>
+      <dl>
+        <dt>cozy-clearance allows to make a clearance object</dt>
+        <dd><pre><code>var arbitraryIdentifiers;
+arbitraryIdentifiers = {
+  'email': 'john@example.com',
+  'contactid': '3615'
+};
+rule = clearance.make(model, 'r', arbitraryIdentifiers);</code></pre></dd>
+        <dt>and this clearance have identifiers, perm and a secret key</dt>
+        <dd><pre><code>rule.should.have.property('perm', 'r');
+rule.should.have.property('email', 'john@example.com');
+rule.should.have.property('contactid', '3615');
+rule.should.have.property('key');</code></pre></dd>
+      </dl>
+    </section>
+    <section class="suite">
+      <h1>Adding clearance to a model</h1>
+      <dl>
+        <dt>cozy-clearance allows to directly add clearance to an object</dt>
+        <dd><pre><code>var arbitraryIdentifiers;
+arbitraryIdentifiers = {
+  'email': 'john@example.com',
+  'contactid': '3615'
+};
+clearance.add(model, 'r', arbitraryIdentifiers, function(err, key) {
+  should.exist(key);
+  secretkey = key;
+  return done(err);
+});</code></pre></dd>
+        <dt>the rules are stored as an array of rules</dt>
+        <dd><pre><code>model.clearance.should.have.property('length', 1);
+rule = model.clearance[0];
+rule.should.have.property('perm', 'r');
+rule.should.have.property('email', 'john@example.com');
+rule.should.have.property('contactid', '3615');
+rule.should.have.property('key');</code></pre></dd>
+        <dt>so we can add multiple clearances</dt>
+        <dd><pre><code>var jane, steve;
+jane = {
+  email: 'jane@example.com'
+};
+steve = {
+  email: 'steve@example.com'
+};
+clearance.add(model, 'rw', jane, function(err, key) {
+  if (err) {
+    return done(err);
+  }
+  janekey = key;
+  return clearance.add(model, 'w', steve, function(err, key) {
+    stevekey = key;
+    model.clearance.should.have.length(3);
+    return done(err);
+  });
+});</code></pre></dd>
+      </dl>
+    </section>
+    <section class="suite">
+      <h1>Checking clearances</h1>
+      <dl>
+        <dt>cozy-clearance allows to check clearance for a request</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: secretkey
+  }
+};
+clearance.check(model, 'r', req, function(err, rule) {
+  rule.should.be.ok;
+  rule.should.have.property('perm', 'r');
+  rule.should.have.property('email', 'john@example.com');
+  return rule.should.have.property('key');
+});</code></pre></dd>
+        <dt>if the key is wrong, rule will be false</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: &quot;not a key&quot;
+  }
+};
+clearance.check(model, 'r', req, function(err, rule) {
+  return rule.should.not.be.ok;
+});</code></pre></dd>
+        <dt>if the perm is wrong, rule will be false</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: secretkey
+  }
+};
+clearance.check(model, 'w', req, function(err, rule) {
+  return rule.should.not.be.ok;
+});</code></pre></dd>
+        <dt>retrieve correct rule for a given key</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: janekey
+  }
+};
+clearance.check(model, 'r', req, function(err, rule) {
+  rule.should.have.property('email', 'jane@example.com');
+  return done(err);
+});</code></pre></dd>
+        <dt>'rw' perm allows both read and write</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: janekey
+  }
+};
+clearance.check(model, 'w', req, function(err, rule) {
+  rule.should.have.property('email', 'jane@example.com');
+  return done(err);
+});</code></pre></dd>
+      </dl>
+    </section>
+    <section class="suite">
+      <h1>Revoking a clearance</h1>
+      <dl>
+        <dt>cozy-clearance allows to revoke a rule</dt>
+        <dd><pre><code>clearance.revoke(model, {
+  email: 'jane@example.com'
+}, function(err) {
+  return done(err);
+});</code></pre></dd>
+        <dt>then I can't use this key anymore</dt>
+        <dd><pre><code>var req;
+req = {
+  query: {
+    key: janekey
+  }
+};
+clearance.check(model, 'r', req, function(err, rule) {
+  rule.should.be[&quot;false&quot;];
+  return done(err);
+});</code></pre></dd>
+      </dl>
+    </section>
+  </body>
+</html>
