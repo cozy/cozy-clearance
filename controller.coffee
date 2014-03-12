@@ -1,6 +1,6 @@
 clearance = require './index'
 async = require 'async'
-americano = require 'americano'
+americano = require 'americano-cozy'
 
 Contact = americano.getModel 'Contact',
     fn            : String
