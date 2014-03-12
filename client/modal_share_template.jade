@@ -1,0 +1,25 @@
+p= t('modal question ' + type + ' shareable', {name: model.get('name')})
+p
+    button.button.btn-cozy#share-public= t('public')
+    | &nbsp;
+    button.button.btn-cozy#share-private= t('private')
+
+
+if model.get('clearance') == 'public'
+  p= t('modal shared ' + type + ' link msg')
+    input(value=makeURL()).form-control
+
+else
+
+  p= t('only you can see')
+
+  input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
+  ul#share-list
+    each rule, i in model.get('clearance')
+      - var key = rule.key
+      li
+        a.show-link(data-key=key,title=t("see link"),href=makeURL(key))
+          i.icon-link
+        |  &nbsp; &nbsp;
+        = rule.email
+        a.pull-right.revoke(data-key=key, title=t("revoke")): i.icon-remove
