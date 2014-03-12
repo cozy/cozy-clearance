@@ -100,29 +100,6 @@ module.exports = function(input, onGuestAdded, extrafilter) {
 };
 
 });
-require.register("cozy-clearance/i18n", function(exports, require, module){
-    module.exports = {
-  "details": "Details",
-  "cancel": "Cancel",
-  "copy paste link": "Copy this link :",
-  "modal question folder shareable": "Select share mode for this folder",
-  "modal shared folder custom msg": "Enter email and press enter",
-  "modal shared folder link msg": "Send this link to let people access this folder",
-  "modal question file shareable": "Select share mode for this file",
-  "modal shared file custom msg": "Enter email and press enter",
-  "modal shared file link msg": "Send this link to let people access this file",
-  "only you can see": "Only you and the people listed below can access this",
-  "public": "Public",
-  "private": "Private",
-  "save": "Save",
-  "see link": "See link",
-  "sharing": "Sharing",
-  "revoke": "Revoke",
-  "also have access": "These people also have access, because they have access to a parent folder",
-  "inherited from": "inherited from"
-};
-
-});
 require.register("cozy-clearance/modal", function(exports, require, module){
     var Modal,
   __hasProp = {}.hasOwnProperty,
@@ -239,18 +216,18 @@ require.register("cozy-clearance/modal_share_template", function(exports, requir
     function template(locals) {
 var buf = [];
 var jade_mixins = {};
-var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.model,makeURL = locals_.makeURL;
+var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.model,clearance = locals_.clearance,makeURL = locals_.makeURL;
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade.interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('public')) ? "" : jade.interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('private')) ? "" : jade.interp)) + "</button></p>");
-if ( model.get('clearance') == 'public')
+if ( clearance == 'public')
 {
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "<input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/></p>");
 }
 else
 {
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('only you can see')) ? "" : jade.interp)) + "</p><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " class=\"form-control\"/><ul id=\"share-list\">");
-// iterate model.get('clearance')
+// iterate clearance
 ;(function(){
-  var $$obj = model.get('clearance');
+  var $$obj = clearance;
   if ('number' == typeof $$obj.length) {
 
     for (var i = 0, $$l = $$obj.length; i < $$l; i++) {
@@ -321,6 +298,7 @@ module.exports = CozyClearanceModal = (function(_super) {
     this.onClose = __bind(this.onClose, this);
     this.revoke = __bind(this.revoke, this);
     this.onGuestAdded = __bind(this.onGuestAdded, this);
+    this.getRenderData = __bind(this.getRenderData, this);
     this.typeaheadFilter = __bind(this.typeaheadFilter, this);
     this.makeURL = __bind(this.makeURL, this);
     return CozyClearanceModal.__super__.constructor.apply(this, arguments);
@@ -404,18 +382,21 @@ module.exports = CozyClearanceModal = (function(_super) {
     });
   };
 
+  CozyClearanceModal.prototype.getRenderData = function() {
+    return {
+      type: this.model.get('type'),
+      model: this.model,
+      clearance: this.model.get('clearance'),
+      makeURL: this.makeURL,
+      t: t
+    };
+  };
+
   CozyClearanceModal.prototype.refresh = function(data) {
     if (data) {
       this.model.set(data);
     }
-    this.$('.modal-body').html(this.template_content({
-      type: this.model.get('type'),
-      model: this.model,
-      forcedPublic: this.forcedPublic,
-      inherited: this.inherited,
-      makeURL: this.makeURL,
-      t: t
-    }));
+    this.$('.modal-body').html(this.template_content(this.getRenderData()));
     return this.afterRender();
   };
 
@@ -449,7 +430,6 @@ module.exports = CozyClearanceModal = (function(_super) {
 
   CozyClearanceModal.prototype.onClose = function(saving) {
     var newClearances, text;
-    console.log("HERE", saving);
     if (!saving) {
       return this.model.set({
         clearance: this.initState
