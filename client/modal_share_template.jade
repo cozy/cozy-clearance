@@ -5,7 +5,7 @@ p
     button.button.btn-cozy#share-private= t('private')
 
 
-if model.get('clearance') == 'public'
+if clearance == 'public'
   p= t('modal shared ' + type + ' link msg')
     input(value=makeURL()).form-control
 
@@ -15,7 +15,7 @@ else
 
   input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
   ul#share-list
-    each rule, i in model.get('clearance')
+    each rule, i in clearance
       - var key = rule.key
       li
         a.show-link(data-key=key,title=t("see link"),href=makeURL(key))

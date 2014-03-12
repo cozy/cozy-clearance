@@ -70,16 +70,16 @@ module.exports = class CozyClearanceModal extends Modal
     existsEmail: (email) ->
         @model.get('clearance').some (rule) -> rule.email is email
 
+    getRenderData: =>
+        type: @model.get('type')
+        model: @model
+        clearance: @model.get('clearance')
+        makeURL: @makeURL
+        t: t
 
     refresh: (data) ->
         @model.set data if data
-        @$('.modal-body').html @template_content
-            type: @model.get('type')
-            model: @model
-            forcedPublic: @forcedPublic
-            inherited: @inherited
-            makeURL: @makeURL
-            t: t
+        @$('.modal-body').html @template_content @getRenderData()
         @afterRender()
 
     onGuestAdded: (result) =>
@@ -99,7 +99,6 @@ module.exports = class CozyClearanceModal extends Modal
         @refresh()
 
     onClose: (saving) =>
-        console.log "HERE", saving
         if not saving
             @model.set clearance: @initState
         else
