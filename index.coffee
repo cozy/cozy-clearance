@@ -15,13 +15,13 @@ randomString = (length=32) ->
 
 exports.check = (model, permission, req, callback) ->
 
-    if not model.clearance or model.clearance is 'private'
+    if not model.clearance or model.clearance.length is 0
         return callback null, false
 
     if model.clearance is 'public'
         return callback null, true
 
-    if not Array.isArray model.clearance
+    unless Array.isArray(model.clearance)
         return callback new Error('malformed clearance'), false
 
     key = req.query.key
@@ -49,10 +49,7 @@ exports.add = (model, permission, details, callback) ->
     clearance = clearance.concat rule
 
     model.updateAttributes clearance: clearance, (err) ->
-        return callback err if err
-
-        callback null, rule.key
-
+        callback err, rule.key
 
 exports.revoke = (model, details, callback) ->
 
