@@ -61,3 +61,8 @@ exports.revoke = (model, details, callback) ->
     clearance = model.clearance.filter(dontMatch)
     model.updateAttributes clearance: clearance, callback
 
+exports.replace = (model, newclearance, callback) ->
+    model.updateAttributes clearance: newclearance, callback
+
+
+exports.controller = require './controller'
