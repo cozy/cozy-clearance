@@ -220,7 +220,7 @@ var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.m
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade.interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('public')) ? "" : jade.interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('private')) ? "" : jade.interp)) + "</button></p>");
 if ( clearance == 'public')
 {
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "<input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/></p>");
+buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "</p><input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
 }
 else
 {

@@ -7,12 +7,11 @@ p
 
 if clearance == 'public'
   p= t('modal shared ' + type + ' link msg')
-    input(value=makeURL()).form-control
+  input(value=makeURL()).form-control
 
 else
 
   p= t('only you can see')
-
   input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
   ul#share-list
     each rule, i in clearance
