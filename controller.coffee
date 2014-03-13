@@ -1,24 +1,40 @@
 clearance = require './index'
 async = require 'async'
-americano = require 'americano-cozy'
 
+americano = require 'americano-cozy'
 Contact = americano.getModel 'Contact',
     fn            : String
     n             : String
     datapoints    : (x) -> x
 
+# find the cozy adapter
+CozyAdapter = try require 'americano-cozy/node_modules/jugglingdb-cozy-adapter'
+catch e then require 'jugglingdb-cozy-adapter'
+
+
 module.exports = (options) ->
 
-    sendMail = options.sendMail
     out = {}
 
-    out.details = (req, res, next) ->
-        async.parallel
-            domain: (cb) -> req.doc.getPublicUrl cb
-            self: (cb) -> cb null, req.doc.clearance
-        , (err, result) ->
-            return next err if err
-            res.send result
+    mailSubject = options.mailSubject
+    mailTemplate = options.mailTemplate
+
+    # send a share mail
+    sendMail = (doc, key, cb) ->
+        rule = doc.clearance.filter((rule) -> rule.key is key)[0]
+
+        doc.getPublicURL (err, url) =>
+            return cb err if err
+
+            url += '?key=' + rule.key
+
+            mailOptions =
+                to: rule.email
+                subject: mailSubject {doc, url}
+                content: url
+                html: mailTemplate {doc, url}
+
+            CozyAdapter.sendMailFromUser mailOptions, cb
 
     # add one rule
     # expect body = {email, contactid, autosend}
@@ -45,7 +61,7 @@ module.exports = (options) ->
     # expect body = {key}
     out.send = (req, res, next) ->
         {key} = req.body
-        sendMail req.params.type, req.doc, key, (err) ->
+        sendMail req.doc, key, (err) ->
             return next err if err
             newrules = req.doc.clearance.map (rule) ->
                 rule.sent = true if rule.key is key
@@ -69,7 +85,7 @@ module.exports = (options) ->
         sent = []
         async.each toSend, (rule, cb) ->
             sent.push rule.key
-            sendMail req.params.type, req.doc, rule.key, cb
+            sendMail req.doc, rule.key, cb
         , (err) ->
             return next err if err
             newClearance = req.doc.clearance.map (rule) ->
