@@ -5,7 +5,7 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
 
 contactCollection = new Backbone.Collection();
 
-contactCollection.url = 'contacts';
+contactCollection.url = 'clearance/contacts';
 
 contactCollection.model = Contact = (function(_super) {
   __extends(Contact, _super);
@@ -321,7 +321,7 @@ buf.push("</ul>");
 module.exports = template;
 });
 require.register("cozy-clearance/modal_share_view", function(exports, require, module){
-    var CozyClearanceModal, Modal, clearanceDiff, contactTypeahead, randomString,
+    var CozyClearanceModal, Modal, clearanceDiff, contactTypeahead, randomString, request,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -354,6 +354,18 @@ clearanceDiff = function(now, old) {
       key: rule.key
     });
   });
+};
+
+request = function(method, url, data, options) {
+  var params;
+  params = {
+    method: method,
+    url: url,
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: 'application/json; charset=utf-8'
+  };
+  return $.ajax(_.extend(params, options));
 };
 
 module.exports = CozyClearanceModal = (function(_super) {
@@ -410,7 +422,7 @@ module.exports = CozyClearanceModal = (function(_super) {
   };
 
   CozyClearanceModal.prototype.makePublic = function() {
-    if (this.forcedPublic || this.model.get('clearance') === 'public') {
+    if (this.model.get('clearance') === 'public') {
       return;
     }
     this.lastPrivate = this.model.get('clearance');
@@ -433,7 +445,7 @@ module.exports = CozyClearanceModal = (function(_super) {
   CozyClearanceModal.prototype.afterRender = function() {
     var clearance;
     clearance = this.model.get('clearance') || [];
-    if (this.forcedPublic || clearance === 'public') {
+    if (clearance === 'public') {
       return this.$('#share-public').addClass('toggled');
     } else {
       this.$('#share-private').addClass('toggled');
@@ -466,10 +478,7 @@ module.exports = CozyClearanceModal = (function(_super) {
     };
   };
 
-  CozyClearanceModal.prototype.refresh = function(data) {
-    if (data) {
-      this.model.set(data);
-    }
+  CozyClearanceModal.prototype.refresh = function() {
     this.$('.modal-body').html(this.template_content(this.getRenderData()));
     return this.afterRender();
   };
@@ -531,6 +540,32 @@ module.exports = CozyClearanceModal = (function(_super) {
         return this.doSave(false);
       }
     }
+  };
+
+  CozyClearanceModal.prototype.doSave = function(sendmail, clearances) {
+    return request('PUT', "clearance/" + this.model.id, {
+      clearance: this.model.get('clearance')
+    }, {
+      error: function() {
+        return Modal.error('server error occured');
+      },
+      success: (function(_this) {
+        return function(data) {
+          if (!sendmail) {
+            return _this.$el.modal('hide');
+          } else {
+            return request('POST', "clearance/" + _this.model.id + "/send", newClearances, {
+              error: function() {
+                return Modal.error('mail not send');
+              },
+              success: function(data) {
+                return _this.$el.modal('hide');
+              }
+            });
+          }
+        };
+      })(this)
+    });
   };
 
   CozyClearanceModal.prototype.showLink = function(event) {

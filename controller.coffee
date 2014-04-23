@@ -36,42 +36,42 @@ module.exports = (options) ->
 
             CozyAdapter.sendMailFromUser mailOptions, cb
 
-    # add one rule
-    # expect body = {email, contactid, autosend}
-    out.add = (req, res, next) ->
-        {email, contactid, autosend, perm} = req.body
+    # # add one rule
+    # # expect body = {email, contactid, autosend, perm}
+    # out.add = (req, res, next) ->
+    #     {email, contactid, autosend, perm} = req.body
 
-        perm ?= 'r'
+    #     perm ?= 'r'
 
-        clearance.add req.doc, perm, {email, contactid}, (err, key) ->
-            return next err if err
-            if not autosend or autosend is 'false'
-                res.send req.doc
-            else
-                req.body.key = key
-                out.send req, res, next
+    #     clearance.add req.doc, perm, {email, contactid}, (err, key) ->
+    #         return next err if err
+    #         if not autosend or autosend is 'false'
+    #             res.send req.doc
+    #         else
+    #             req.body.key = key
+    #             out.send req, res, next
 
-    # revoke one rule
-    # expect body = {key}
-    out.revoke = (req, res, next) ->
-        {key} = req.body
-        clearance.revoke req.doc, {key}, (err) ->
-            return next err if err
-            res.send req.doc
+    # # revoke one rule
+    # # expect body = {key}
+    # out.revoke = (req, res, next) ->
+    #     {key} = req.body
+    #     clearance.revoke req.doc, {key}, (err) ->
+    #         return next err if err
+    #         res.send req.doc
 
-    # send one mail
-    # expect body = {key}
-    out.send = (req, res, next) ->
-        {key} = req.body
-        sendMail req.doc, key, (err) ->
-            return next err if err
-            newrules = req.doc.clearance.map (rule) ->
-                rule.sent = true if rule.key is key
-                return rule
+    # # send one mail
+    # # expect body = {key}
+    # out.send = (req, res, next) ->
+    #     {key} = req.body
+    #     sendMail req.doc, key, (err) ->
+    #         return next err if err
+    #         newrules = req.doc.clearance.map (rule) ->
+    #             rule.sent = true if rule.key is key
+    #             return rule
 
-            req.doc.updateAttributes clearance: newrules, (err) ->
-                return next err if err
-                res.send req.doc
+    #         req.doc.updateAttributes clearance: newrules, (err) ->
+    #             return next err if err
+    #             res.send req.doc
 
     # change the whole clearance object
     out.change = (req, res, next) ->

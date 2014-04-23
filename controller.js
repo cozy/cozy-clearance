@@ -58,60 +58,6 @@ module.exports = function(options) {
       };
     })(this));
   };
-  out.add = function(req, res, next) {
-    var autosend, contactid, email, _ref;
-    _ref = req.body, email = _ref.email, contactid = _ref.contactid, autosend = _ref.autosend;
-    return clearance.add(req.doc, 'r', {
-      email: email,
-      contactid: contactid
-    }, function(err, key) {
-      if (err) {
-        return next(err);
-      }
-      if (!autosend || autosend === 'false') {
-        return res.send(req.doc);
-      } else {
-        req.body.key = key;
-        return out.send(req, res, next);
-      }
-    });
-  };
-  out.revoke = function(req, res, next) {
-    var key;
-    key = req.body.key;
-    return clearance.revoke(req.doc, {
-      key: key
-    }, function(err) {
-      if (err) {
-        return next(err);
-      }
-      return res.send(req.doc);
-    });
-  };
-  out.send = function(req, res, next) {
-    var key;
-    key = req.body.key;
-    return sendMail(req.doc, key, function(err) {
-      var newrules;
-      if (err) {
-        return next(err);
-      }
-      newrules = req.doc.clearance.map(function(rule) {
-        if (rule.key === key) {
-          rule.sent = true;
-        }
-        return rule;
-      });
-      return req.doc.updateAttributes({
-        clearance: newrules
-      }, function(err) {
-        if (err) {
-          return next(err);
-        }
-        return res.send(req.doc);
-      });
-    });
-  };
   out.change = function(req, res, next) {
     clearance = req.body.clearance;
     return req.doc.updateAttributes({
