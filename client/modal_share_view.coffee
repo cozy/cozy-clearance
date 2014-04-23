@@ -1,13 +1,13 @@
 Modal = require "./modal"
 contactTypeahead = require "./contact_autocomplete"
 
-# find new clearances between now and old
-
+# randomString for immediate key generation
 randomString = (length=32) ->
     string = ""
     string += Math.random().toString(36).substr(2) while string.length < length
     string.substr 0, length
 
+# find new clearances between now and old
 clearanceDiff = (now, old) ->
     if now is 'public'
         return []
@@ -15,6 +15,17 @@ clearanceDiff = (now, old) ->
         return now
     # return only rules that did not exist in init state
     return now.filter (rule) -> not _.findWhere old, key: rule.key
+
+# convenient method for json requests
+request = (method, url, data, options) ->
+    params = {
+        method: method,
+        url: url,
+        dataType: 'json'
+        data: JSON.stringify(data)
+        contentType: 'application/json; charset=utf-8'
+    }
+    $.ajax _.extend params, options
 
 module.exports = class CozyClearanceModal extends Modal
 
@@ -48,7 +59,7 @@ module.exports = class CozyClearanceModal extends Modal
         return url
 
     makePublic: ->
-        return if @forcedPublic or @model.get('clearance') is 'public'
+        return if @model.get('clearance') is 'public'
         @lastPrivate = @model.get('clearance')
         @model.set clearance:'public'
         @refresh()
@@ -60,7 +71,7 @@ module.exports = class CozyClearanceModal extends Modal
 
     afterRender: () ->
         clearance = @model.get('clearance') or []
-        if @forcedPublic or clearance is 'public'
+        if clearance is 'public'
             @$('#share-public').addClass 'toggled'
         else
             @$('#share-private').addClass 'toggled'
@@ -82,8 +93,7 @@ module.exports = class CozyClearanceModal extends Modal
         possible_permissions: @permissions()
         t: t
 
-    refresh: (data) ->
-        @model.set data if data
+    refresh: ->
         @$('.modal-body').html @template_content @getRenderData()
         @afterRender()
 
@@ -123,6 +133,16 @@ module.exports = class CozyClearanceModal extends Modal
                     @doSave sendmail, newClearances
             else
                 @doSave false
+
+    doSave: (sendmail, clearances) ->
+        request 'PUT', "clearance/#{@model.id}", {clearance: @model.get('clearance')},
+            error: -> Modal.error 'server error occured'
+            success: (data) =>
+                if not sendmail then @$el.modal 'hide'
+                else
+                    request 'POST', "clearance/#{@model.id}/send", newClearances,
+                        error: -> Modal.error 'mail not send'
+                        success: (data) => @$el.modal 'hide'
 
     showLink: (event) =>
         link = $(event.currentTarget)

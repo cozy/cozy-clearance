@@ -1,6 +1,6 @@
 # let's put this here for now
 contactCollection = new Backbone.Collection()
-contactCollection.url = 'contacts'
+contactCollection.url = 'clearance/contacts'
 contactCollection.model = class Contact extends Backbone.Model
     match: (filter) ->
         filter.test(@get('name')) or

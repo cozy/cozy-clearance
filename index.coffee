@@ -1,12 +1,3 @@
-# [perm] in 'r', 'rw'
-
-# a model clearance can be any of
-# 'private', only the owner can readwrite it
-# public:[perm], anyone can readwrite it
-# an array of object
-# {key: secretKey, perm:[perm], ...}
-
-
 randomString = (length=32) ->
     string = ""
     string += Math.random().toString(36).substr(2) while string.length < length
