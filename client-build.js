@@ -216,7 +216,7 @@ require.register("cozy-clearance/modal_share_template", function(exports, requir
     function template(locals) {
 var buf = [];
 var jade_mixins = {};
-var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.model,clearance = locals_.clearance,makeURL = locals_.makeURL;
+var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.model,clearance = locals_.clearance,makeURL = locals_.makeURL,possible_permissions = locals_.possible_permissions;
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade.interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('public')) ? "" : jade.interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('private')) ? "" : jade.interp)) + "</button></p>");
 if ( clearance == 'public')
 {
@@ -234,7 +234,40 @@ buf.push("<p>" + (jade.escape(null == (jade.interp = t('only you can see')) ? ""
       var rule = $$obj[i];
 
 var key = rule.key
-buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"icon-link\"></i></a> &nbsp; &nbsp;" + (jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp)) + "<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
+buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"glyphicon glyphicon-link\"></i></a> &nbsp; &nbsp;" + (jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp)));
+var keys = Object.keys(possible_permissions)
+if ( keys.length > 1)
+{
+buf.push("<select" + (jade.attr("data-key", key, true, false)) + " class=\"changeperm\">");
+// iterate possible_permissions
+;(function(){
+  var $$obj = possible_permissions;
+  if ('number' == typeof $$obj.length) {
+
+    for (var perm = 0, $$l = $$obj.length; perm < $$l; perm++) {
+      var display = $$obj[perm];
+
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var perm in $$obj) {
+      $$l++;      var display = $$obj[perm];
+
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</select>");
+}
+else
+{
+buf.push(jade.escape(null == (jade.interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade.interp));
+}
+buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
     }
 
   } else {
@@ -243,7 +276,40 @@ buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("titl
       $$l++;      var rule = $$obj[i];
 
 var key = rule.key
-buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"icon-link\"></i></a> &nbsp; &nbsp;" + (jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp)) + "<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
+buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"glyphicon glyphicon-link\"></i></a> &nbsp; &nbsp;" + (jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp)));
+var keys = Object.keys(possible_permissions)
+if ( keys.length > 1)
+{
+buf.push("<select" + (jade.attr("data-key", key, true, false)) + " class=\"changeperm\">");
+// iterate possible_permissions
+;(function(){
+  var $$obj = possible_permissions;
+  if ('number' == typeof $$obj.length) {
+
+    for (var perm = 0, $$l = $$obj.length; perm < $$l; perm++) {
+      var display = $$obj[perm];
+
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+    }
+
+  } else {
+    var $$l = 0;
+    for (var perm in $$obj) {
+      $$l++;      var display = $$obj[perm];
+
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+    }
+
+  }
+}).call(this);
+
+buf.push("</select>");
+}
+else
+{
+buf.push(jade.escape(null == (jade.interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade.interp));
+}
+buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
     }
 
   }
@@ -312,8 +378,15 @@ module.exports = CozyClearanceModal = (function(_super) {
       "click #share-private": "makePrivate",
       'click #modal-dialog-share-save': 'onSave',
       'click .revoke': 'revoke',
-      'click .show-link': 'showLink'
+      'click .show-link': 'showLink',
+      'change select.changeperm': 'changePerm'
     });
+  };
+
+  CozyClearanceModal.prototype.permissions = function() {
+    return {
+      'r': t('r')
+    };
   };
 
   CozyClearanceModal.prototype.initialize = function(options) {
@@ -388,6 +461,7 @@ module.exports = CozyClearanceModal = (function(_super) {
       model: this.model,
       clearance: this.model.get('clearance'),
       makeURL: this.makeURL,
+      possible_permissions: this.permissions(),
       t: t
     };
   };
@@ -426,6 +500,14 @@ module.exports = CozyClearanceModal = (function(_super) {
       clearance: clearance
     });
     return this.refresh();
+  };
+
+  CozyClearanceModal.prototype.changePerm = function(event) {
+    var select;
+    select = event.currentTarget;
+    return this.model.get('clearance').filter(function(rule) {
+      return rule.key === select.dataset.key;
+    })[0].perm = select.options[select.selectedIndex].value;
   };
 
   CozyClearanceModal.prototype.onClose = function(saving) {
