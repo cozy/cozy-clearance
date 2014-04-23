@@ -1,4 +1,4 @@
-# [perm] in 'r', 'w', 'rw'
+# [perm] in 'r', 'rw'
 
 # a model clearance can be any of
 # 'private', only the owner can readwrite it

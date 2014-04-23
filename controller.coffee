@@ -39,9 +39,11 @@ module.exports = (options) ->
     # add one rule
     # expect body = {email, contactid, autosend}
     out.add = (req, res, next) ->
-        {email, contactid, autosend} = req.body
+        {email, contactid, autosend, perm} = req.body
 
-        clearance.add req.doc, 'r', {email, contactid}, (err, key) ->
+        perm ?= 'r'
+
+        clearance.add req.doc, perm, {email, contactid}, (err, key) ->
             return next err if err
             if not autosend or autosend is 'false'
                 res.send req.doc

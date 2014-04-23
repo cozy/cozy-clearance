@@ -18,7 +18,15 @@ else
       - var key = rule.key
       li
         a.show-link(data-key=key,title=t("see link"),href=makeURL(key))
-          i.icon-link
+          i.glyphicon.glyphicon-link
         |  &nbsp; &nbsp;
         = rule.email
+        - var keys = Object.keys(possible_permissions)
+        if keys.length > 1
+          select.changeperm(data-key=key)
+            each display, perm in possible_permissions
+              option(value=perm, selected=rule.perm==perm)= ' ' + t('perm') + t(display)
+        else
+          = ' ' + t('perm') + possible_permissions[keys[0]]
+
         a.pull-right.revoke(data-key=key, title=t("revoke")): i.icon-remove

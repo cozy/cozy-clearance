@@ -26,6 +26,10 @@ module.exports = class CozyClearanceModal extends Modal
         'click #modal-dialog-share-save': 'onSave'
         'click .revoke': 'revoke'
         'click .show-link': 'showLink'
+        'change select.changeperm': 'changePerm'
+
+    permissions: ->
+        'r': t('r')
 
     initialize: (options) ->
         @cb = @onClose
@@ -75,6 +79,7 @@ module.exports = class CozyClearanceModal extends Modal
         model: @model
         clearance: @model.get('clearance')
         makeURL: @makeURL
+        possible_permissions: @permissions()
         t: t
 
     refresh: (data) ->
@@ -97,6 +102,12 @@ module.exports = class CozyClearanceModal extends Modal
 
         @model.set clearance: clearance
         @refresh()
+
+    changePerm: (event) ->
+        select = event.currentTarget
+        @model.get('clearance')
+            .filter((rule) -> rule.key is select.dataset.key)[0]
+            .perm = select.options[select.selectedIndex].value
 
     onClose: (saving) =>
         if not saving
