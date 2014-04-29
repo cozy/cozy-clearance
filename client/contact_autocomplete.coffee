@@ -1,14 +1,6 @@
-# let's put this here for now
-contactCollection = new Backbone.Collection()
-contactCollection.url = 'clearance/contacts'
-contactCollection.model = class Contact extends Backbone.Model
-    match: (filter) ->
-        filter.test(@get('name')) or
-        @get('emails').some (email) -> filter.test email
-contactCollection.fetch()
-
 module.exports = (input, onGuestAdded, extrafilter) ->
 
+    contactCollection = require './contact_collection'
     extrafilter ?= -> true
 
     # email not in contact
@@ -28,6 +20,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
                 contact.get('emails').forEach (email) ->
                     items.push
                         id: contact.id
+                        hasPicture: contact.get 'hasPicture'
                         display: "#{contact.get 'name'} &lt;#{email}&gt;"
                         toString: -> "#{email};#{contact.id}"
 
@@ -53,7 +46,11 @@ module.exports = (input, onGuestAdded, extrafilter) ->
 
         highlighter: (contact) ->
             old = $.fn.typeahead.Constructor::highlighter
-            return old.call this, contact.display
+            img = if contact.hasPicture
+                '<img width="14" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;'
+            else
+                '<i class="icon icon-user"></i>&nbsp;'
+            return img + old.call this, contact.display
 
         updater: (value) =>
             onGuestAdded value

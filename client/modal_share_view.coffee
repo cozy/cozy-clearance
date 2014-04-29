@@ -1,5 +1,6 @@
 Modal = require "./modal"
 contactTypeahead = require "./contact_autocomplete"
+contactCollection = require "./contact_collection"
 
 # randomString for immediate key generation
 randomString = (length=32) ->
@@ -88,10 +89,21 @@ module.exports = class CozyClearanceModal extends Modal
     getRenderData: =>
         type: @model.get('type')
         model: @model
-        clearance: @model.get('clearance')
+        clearance: @getClearanceWithContacts()
         makeURL: @makeURL
         possible_permissions: @permissions()
         t: t
+
+    getClearanceWithContacts: =>
+        clearance = @model.get('clearance') or []
+        return 'public' if clearance is 'public'
+
+        clearance.map (rule) ->
+            out = _.clone rule
+            if out.contactid
+                out.contact = contactCollection.get rule.contactid
+
+            return out
 
     refresh: ->
         @$('.modal-body').html @template_content @getRenderData()
@@ -118,6 +130,7 @@ module.exports = class CozyClearanceModal extends Modal
         @model.get('clearance')
             .filter((rule) -> rule.key is select.dataset.key)[0]
             .perm = select.options[select.selectedIndex].value
+        @refresh()
 
     onClose: (saving) =>
         if not saving
@@ -135,7 +148,7 @@ module.exports = class CozyClearanceModal extends Modal
                 @doSave false
 
     doSave: (sendmail, clearances) ->
-        request 'PUT', "clearance/#{@model.id}", {clearance: @model.get('clearance')},
+        request 'PUT', "clearance/#{@model.id}", @saveData(),
             error: -> Modal.error 'server error occured'
             success: (data) =>
                 if not sendmail then @$el.modal 'hide'
@@ -143,6 +156,8 @@ module.exports = class CozyClearanceModal extends Modal
                     request 'POST', "clearance/#{@model.id}/send", newClearances,
                         error: -> Modal.error 'mail not send'
                         success: (data) => @$el.modal 'hide'
+
+    saveData: -> clearance: @model.get('clearance')
 
     showLink: (event) =>
         link = $(event.currentTarget)

@@ -20,7 +20,20 @@ else
         a.show-link(data-key=key,title=t("see link"),href=makeURL(key))
           i.glyphicon.glyphicon-link
         |  &nbsp; &nbsp;
-        = rule.email
+
+        if rule.contact
+          if rule.contact.get('hasPicture')
+            img(width="14" src="clearance/contacts/" + rule.contact.id + ".jpg")
+            | &nbsp;
+          else
+            i.icon.icon-user
+            | &nbsp;
+
+          = rule.contact.get('name')
+
+        else
+          = rule.email
+
         - var keys = Object.keys(possible_permissions)
         if keys.length > 1
           select.changeperm(data-key=key)

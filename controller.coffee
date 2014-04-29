@@ -5,6 +5,7 @@ americano = require 'americano-cozy'
 Contact = americano.getModel 'Contact',
     fn            : String
     n             : String
+    _attachments  : (x) -> x
     datapoints    : (x) -> x
 
 # find the cozy adapter
@@ -108,7 +109,21 @@ module.exports = (options) ->
                 emails = emails.map (dp) -> dp.value
                 return simple =
                     id: contact.id
+                    hasPicture: contact._attachments?.picture?
                     name: name or '?'
                     emails: emails or []
+
+    out.contactPicture = (req, res, next) ->
+        Contact.find req.params.contactid, (err, contact) ->
+            return next err if err
+
+            unless contact._attachments?.picture
+                err = new Error('not found')
+                err.status = 404
+                return next err
+
+            stream = contact.getFile 'picture', (err) ->
+                return res.error 500, "File fetching failed.", err if err
+            stream.pipe res
 
     return out
