@@ -11,6 +11,9 @@ americano = require('americano-cozy');
 Contact = americano.getModel('Contact', {
   fn: String,
   n: String,
+  _attachments: function(x) {
+    return x;
+  },
   datapoints: function(x) {
     return x;
   }
@@ -104,7 +107,7 @@ module.exports = function(options) {
         return next(err);
       }
       return res.send(contacts.map(function(contact) {
-        var emails, name, simple, _ref, _ref1;
+        var emails, name, simple, _ref, _ref1, _ref2;
         name = contact.fn || ((_ref = contact.n) != null ? _ref.split(';').slice(0, 2).join(' ') : void 0);
         emails = (_ref1 = contact.datapoints) != null ? _ref1.filter(function(dp) {
           return dp.name === 'email';
@@ -114,10 +117,30 @@ module.exports = function(options) {
         });
         return simple = {
           id: contact.id,
+          hasPicture: ((_ref2 = contact._attachments) != null ? _ref2.picture : void 0) != null,
           name: name || '?',
           emails: emails || []
         };
       }));
+    });
+  };
+  out.contactPicture = function(req, res, next) {
+    return Contact.find(req.params.contactid, function(err, contact) {
+      var stream, _ref;
+      if (err) {
+        return next(err);
+      }
+      if (!((_ref = contact._attachments) != null ? _ref.picture : void 0)) {
+        err = new Error('not found');
+        err.status = 404;
+        return next(err);
+      }
+      stream = contact.getFile('picture', function(err) {
+        if (err) {
+          return res.error(500, "File fetching failed.", err);
+        }
+      });
+      return stream.pipe(res);
     });
   };
   return out;
