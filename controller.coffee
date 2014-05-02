@@ -37,43 +37,6 @@ module.exports = (options) ->
 
             CozyAdapter.sendMailFromUser mailOptions, cb
 
-    # # add one rule
-    # # expect body = {email, contactid, autosend, perm}
-    # out.add = (req, res, next) ->
-    #     {email, contactid, autosend, perm} = req.body
-
-    #     perm ?= 'r'
-
-    #     clearance.add req.doc, perm, {email, contactid}, (err, key) ->
-    #         return next err if err
-    #         if not autosend or autosend is 'false'
-    #             res.send req.doc
-    #         else
-    #             req.body.key = key
-    #             out.send req, res, next
-
-    # # revoke one rule
-    # # expect body = {key}
-    # out.revoke = (req, res, next) ->
-    #     {key} = req.body
-    #     clearance.revoke req.doc, {key}, (err) ->
-    #         return next err if err
-    #         res.send req.doc
-
-    # # send one mail
-    # # expect body = {key}
-    # out.send = (req, res, next) ->
-    #     {key} = req.body
-    #     sendMail req.doc, key, (err) ->
-    #         return next err if err
-    #         newrules = req.doc.clearance.map (rule) ->
-    #             rule.sent = true if rule.key is key
-    #             return rule
-
-    #         req.doc.updateAttributes clearance: newrules, (err) ->
-    #             return next err if err
-    #             res.send req.doc
-
     # change the whole clearance object
     out.change = (req, res, next) ->
         {clearance} = req.body
@@ -99,14 +62,22 @@ module.exports = (options) ->
                     return next err if err
                     res.send req.doc
 
+    out.getEmailsFromContactFields =  (contact) ->
+        emails = contact.datapoints?.filter (dp) -> dp.name is 'email'
+        emails = emails.map (dp) -> dp.value
+        emails
+
+    # take directly full name or build it from the name field.
+    out.getContactFullName = (contact) ->
+        contact.fn or contact.n?.split(';')[0..1].join(' ')
+
     # contact list for autocomplete
     out.contactList = (req, res, next) ->
         Contact.request 'all', (err, contacts) ->
             return next err if err
             res.send contacts.map (contact) ->
-                name = contact.fn or contact.n?.split(';')[0..1].join(' ')
-                emails = contact.datapoints?.filter (dp) -> dp.name is 'email'
-                emails = emails.map (dp) -> dp.value
+                name = out.getContactFullName contact
+                emails = out.getEmailsFromContactFields contact
                 return simple =
                     id: contact.id
                     hasPicture: contact._attachments?.picture?
