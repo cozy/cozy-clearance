@@ -1,12 +1,12 @@
 
 # npm install --save-dev gulp gulp-commonjs-wrap gulp-compile-js gulp-concat gulp-uglify
 gulp = require 'gulp'
-wrap = require 'gulp-commonjs-wrap'
+wrap = require 'gulp-wrap-commonjs'
 compile = require 'gulp-compile-js'
 concat = require 'gulp-concat'
 uglify = require 'gulp-uglify'
 # header = require 'gulp-header'
-through = require 'gulp-commonjs-wrap/node_modules/through2'
+through = require 'gulp-wrap-commonjs/node_modules/through2'
 
 version = require('./package.json').version
 
