@@ -260,11 +260,11 @@ else
 {
 buf.push("<i class=\"icon icon-user\"></i>&nbsp;");
 }
-buf.push(jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp));
+buf.push("<span class=\"clearance-name\">" + (jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp)) + "</span>");
 }
 else
 {
-buf.push(jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp));
+buf.push("<span class=\"clearance-name\">" + (jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp)) + "</span>");
 }
 var keys = Object.keys(possible_permissions)
 if ( keys.length > 1)
@@ -318,11 +318,11 @@ else
 {
 buf.push("<i class=\"icon icon-user\"></i>&nbsp;");
 }
-buf.push(jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp));
+buf.push("<span class=\"clearance-name\">" + (jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp)) + "</span>");
 }
 else
 {
-buf.push(jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp));
+buf.push("<span class=\"clearance-name\">" + (jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp)) + "</span>");
 }
 var keys = Object.keys(possible_permissions)
 if ( keys.length > 1)

@@ -26,10 +26,12 @@ else
             i.icon.icon-user
             | &nbsp;
 
-          = rule.contact.get('name')
+          span.clearance-name
+            = rule.contact.get('name')
 
         else
-          = rule.email
+          span.clearance-name
+            = rule.email
 
         - var keys = Object.keys(possible_permissions)
         if keys.length > 1
