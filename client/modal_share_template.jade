@@ -16,10 +16,7 @@ else
   ul#share-list
     each rule, i in clearance
       - var key = rule.key
-      li
-        a.show-link(data-key=key,title=t("see link"),href=makeURL(key))
-          i.glyphicon.glyphicon-link
-        |  &nbsp; &nbsp;
+      li.clearance-line
 
         if rule.contact
           if rule.contact.get('hasPicture')
@@ -42,4 +39,8 @@ else
         else
           = ' ' + t('perm') + possible_permissions[keys[0]]
 
-        a.pull-right.revoke(data-key=key, title=t("revoke")): i.icon-remove
+        a.clearance-btn.pull-right.revoke(
+            data-key=key, title=t("revoke")): i.icon-remove
+        a.clearance-btn.pull-right.show-link(
+            data-key=key,title=t("see link"),href=makeURL(key))
+          i.glyphicon.glyphicon-link

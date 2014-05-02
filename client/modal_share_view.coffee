@@ -160,19 +160,20 @@ module.exports = class CozyClearanceModal extends Modal
     saveData: -> clearance: @model.get('clearance')
 
     showLink: (event) =>
-        link = $(event.currentTarget)
-        url = link.prop 'href'
+        line = $(event.target).parents('li')
+        if line.find('.linkshow').length is 0
+            link = $(event.currentTarget)
+            url = link.prop 'href'
 
-        line = $('<div class="linkshow">')
-        label = $('<label>').text(t 'copy paste link')
-        urlField = $('<input type="text">')
-            .val(url)
-            .blur (e) ->
-                line.remove()
+            line = $('<div class="linkshow">')
+            label = $('<label>').text(t 'copy paste link')
+            urlField = $('<input type="text">')
+                .val(url)
 
-        link.parents('li').append line.append label, urlField
-        urlField.focus().select()
-        event.preventDefault()
+            link.parents('li').append line.append label, urlField
+            urlField.focus().select()
+            event.preventDefault()
+        else
+           line.find('.linkshow').remove()
+
         return false
-
-

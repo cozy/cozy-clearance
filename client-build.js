@@ -64,7 +64,7 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
     highlighter: function(contact) {
       var img, old;
       old = $.fn.typeahead.Constructor.prototype.highlighter;
-      img = contact.hasPicture ? '<img width="14" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;' : '<i class="icon icon-user"></i>&nbsp;';
+      img = contact.hasPicture ? '<img width="40" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;' : '<i class="icon icon-user"></i>&nbsp;';
       return img + old.call(this, contact.display);
     },
     updater: (function(_this) {
@@ -249,7 +249,7 @@ buf.push("<p>" + (jade.escape(null == (jade_interp = t('only you can see')) ? ""
       var rule = $$obj[i];
 
 var key = rule.key
-buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"glyphicon glyphicon-link\"></i></a> &nbsp; &nbsp;");
+buf.push("<li class=\"clearance-line\">");
 if ( rule.contact)
 {
 if ( rule.contact.get('hasPicture'))
@@ -298,7 +298,7 @@ else
 {
 buf.push(jade.escape(null == (jade_interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade_interp));
 }
-buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
+buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"clearance-btn pull-right revoke\"><i class=\"icon-remove\"></i></a><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"clearance-btn pull-right show-link\"><i class=\"glyphicon glyphicon-link\"></i></a></li>");
     }
 
   } else {
@@ -307,7 +307,7 @@ buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", 
       $$l++;      var rule = $$obj[i];
 
 var key = rule.key
-buf.push("<li><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"show-link\"><i class=\"glyphicon glyphicon-link\"></i></a> &nbsp; &nbsp;");
+buf.push("<li class=\"clearance-line\">");
 if ( rule.contact)
 {
 if ( rule.contact.get('hasPicture'))
@@ -356,7 +356,7 @@ else
 {
 buf.push(jade.escape(null == (jade_interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade_interp));
 }
-buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
+buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"clearance-btn pull-right revoke\"><i class=\"icon-remove\"></i></a><a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("see link"), true, false)) + (jade.attr("href", makeURL(key), true, false)) + " class=\"clearance-btn pull-right show-link\"><i class=\"glyphicon glyphicon-link\"></i></a></li>");
     }
 
   }
@@ -643,16 +643,19 @@ module.exports = CozyClearanceModal = (function(_super) {
 
   CozyClearanceModal.prototype.showLink = function(event) {
     var label, line, link, url, urlField;
-    link = $(event.currentTarget);
-    url = link.prop('href');
-    line = $('<div class="linkshow">');
-    label = $('<label>').text(t('copy paste link'));
-    urlField = $('<input type="text">').val(url).blur(function(e) {
-      return line.remove();
-    });
-    link.parents('li').append(line.append(label, urlField));
-    urlField.focus().select();
-    event.preventDefault();
+    line = $(event.target).parents('li');
+    if (line.find('.linkshow').length === 0) {
+      link = $(event.currentTarget);
+      url = link.prop('href');
+      line = $('<div class="linkshow">');
+      label = $('<label>').text(t('copy paste link'));
+      urlField = $('<input type="text">').val(url);
+      link.parents('li').append(line.append(label, urlField));
+      urlField.focus().select();
+      event.preventDefault();
+    } else {
+      line.find('.linkshow').remove();
+    }
     return false;
   };
 
