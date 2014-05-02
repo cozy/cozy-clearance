@@ -13,7 +13,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
     # contact typeahead
     input.typeahead
         source: (query) ->
-            regexp = new RegExp(query);
+            regexp = new RegExp(query)
             contacts = contactCollection.filter((contact) -> contact.match regexp)
             items = []
             contacts.forEach (contact) ->
@@ -47,7 +47,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
         highlighter: (contact) ->
             old = $.fn.typeahead.Constructor::highlighter
             img = if contact.hasPicture
-                '<img width="14" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;'
+                '<img width="40" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;'
             else
                 '<i class="icon icon-user"></i>&nbsp;'
             return img + old.call this, contact.display

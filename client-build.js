@@ -1,5 +1,5 @@
 require.register("cozy-clearance/contact_autocomplete", function(exports, require, module){
-    module.exports = function(input, onGuestAdded, extrafilter) {
+  module.exports = function(input, onGuestAdded, extrafilter) {
   var contactCollection;
   contactCollection = require('./contact_collection');
   if (extrafilter == null) {
@@ -76,9 +76,11 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
   });
 };
 
+  
 });
+
 require.register("cozy-clearance/contact_collection", function(exports, require, module){
-    var Contact, collection,
+  var Contact, collection,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -107,9 +109,11 @@ collection.fetch();
 
 module.exports = collection;
 
+  
 });
+
 require.register("cozy-clearance/modal", function(exports, require, module){
-    var Modal,
+  var Modal,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -219,20 +223,23 @@ Modal.error = function(text, cb) {
 
 module.exports = Modal;
 
+  
 });
+
 require.register("cozy-clearance/modal_share_template", function(exports, require, module){
-    function template(locals) {
+  function template(locals) {
 var buf = [];
 var jade_mixins = {};
-var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.model,clearance = locals_.clearance,makeURL = locals_.makeURL,possible_permissions = locals_.possible_permissions;
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade.interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('public')) ? "" : jade.interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('private')) ? "" : jade.interp)) + "</button></p>");
+var jade_interp;
+;var locals_for_with = (locals || {});(function (t, type, model, clearance, makeURL, Object, possible_permissions) {
+buf.push("<p>" + (jade.escape(null == (jade_interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade_interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('public')) ? "" : jade_interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('private')) ? "" : jade_interp)) + "</button></p>");
 if ( clearance == 'public')
 {
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "</p><input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
+buf.push("<p>" + (jade.escape(null == (jade_interp = t('modal shared ' + type + ' link msg')) ? "" : jade_interp)) + "</p><input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
 }
 else
 {
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('only you can see')) ? "" : jade.interp)) + "</p><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " class=\"form-control\"/><ul id=\"share-list\">");
+buf.push("<p>" + (jade.escape(null == (jade_interp = t('only you can see')) ? "" : jade_interp)) + "</p><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " class=\"form-control\"/><ul id=\"share-list\">");
 // iterate clearance
 ;(function(){
   var $$obj = clearance;
@@ -247,17 +254,17 @@ if ( rule.contact)
 {
 if ( rule.contact.get('hasPicture'))
 {
-buf.push("<img width=\"14\"" + (jade.attr("src", "clearance/contacts/" + rule.contact.id + ".jpg", true, false)) + "/>&nbsp;");
+buf.push("<img width=\"40\"" + (jade.attr("src", "clearance/contacts/" + rule.contact.id + ".jpg", true, false)) + "/>&nbsp;");
 }
 else
 {
 buf.push("<i class=\"icon icon-user\"></i>&nbsp;");
 }
-buf.push(jade.escape(null == (jade.interp = rule.contact.get('name')) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp));
 }
 else
 {
-buf.push(jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp));
 }
 var keys = Object.keys(possible_permissions)
 if ( keys.length > 1)
@@ -271,7 +278,7 @@ buf.push("<select" + (jade.attr("data-key", key, true, false)) + " class=\"chang
     for (var perm = 0, $$l = $$obj.length; perm < $$l; perm++) {
       var display = $$obj[perm];
 
-buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade_interp = ' ' + t('perm') + t(display)) ? "" : jade_interp)) + "</option>");
     }
 
   } else {
@@ -279,7 +286,7 @@ buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selec
     for (var perm in $$obj) {
       $$l++;      var display = $$obj[perm];
 
-buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade_interp = ' ' + t('perm') + t(display)) ? "" : jade_interp)) + "</option>");
     }
 
   }
@@ -289,7 +296,7 @@ buf.push("</select>");
 }
 else
 {
-buf.push(jade.escape(null == (jade.interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade_interp));
 }
 buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
     }
@@ -305,17 +312,17 @@ if ( rule.contact)
 {
 if ( rule.contact.get('hasPicture'))
 {
-buf.push("<img width=\"14\"" + (jade.attr("src", "clearance/contacts/" + rule.contact.id + ".jpg", true, false)) + "/>&nbsp;");
+buf.push("<img width=\"40\"" + (jade.attr("src", "clearance/contacts/" + rule.contact.id + ".jpg", true, false)) + "/>&nbsp;");
 }
 else
 {
 buf.push("<i class=\"icon icon-user\"></i>&nbsp;");
 }
-buf.push(jade.escape(null == (jade.interp = rule.contact.get('name')) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = rule.contact.get('name')) ? "" : jade_interp));
 }
 else
 {
-buf.push(jade.escape(null == (jade.interp = rule.email) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = rule.email) ? "" : jade_interp));
 }
 var keys = Object.keys(possible_permissions)
 if ( keys.length > 1)
@@ -329,7 +336,7 @@ buf.push("<select" + (jade.attr("data-key", key, true, false)) + " class=\"chang
     for (var perm = 0, $$l = $$obj.length; perm < $$l; perm++) {
       var display = $$obj[perm];
 
-buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade_interp = ' ' + t('perm') + t(display)) ? "" : jade_interp)) + "</option>");
     }
 
   } else {
@@ -337,7 +344,7 @@ buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selec
     for (var perm in $$obj) {
       $$l++;      var display = $$obj[perm];
 
-buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade.interp = ' ' + t('perm') + t(display)) ? "" : jade.interp)) + "</option>");
+buf.push("<option" + (jade.attr("value", perm, true, false)) + (jade.attr("selected", rule.perm==perm, true, false)) + ">" + (jade.escape(null == (jade_interp = ' ' + t('perm') + t(display)) ? "" : jade_interp)) + "</option>");
     }
 
   }
@@ -347,7 +354,7 @@ buf.push("</select>");
 }
 else
 {
-buf.push(jade.escape(null == (jade.interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade.interp));
+buf.push(jade.escape(null == (jade_interp = ' ' + t('perm') + possible_permissions[keys[0]]) ? "" : jade_interp));
 }
 buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", t("revoke"), true, false)) + " class=\"pull-right revoke\"><i class=\"icon-remove\"></i></a></li>");
     }
@@ -356,12 +363,14 @@ buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", 
 }).call(this);
 
 buf.push("</ul>");
-};return buf.join("");
+}}("t" in locals_for_with?locals_for_with.t:typeof t!=="undefined"?t:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"clearance" in locals_for_with?locals_for_with.clearance:typeof clearance!=="undefined"?clearance:undefined,"makeURL" in locals_for_with?locals_for_with.makeURL:typeof makeURL!=="undefined"?makeURL:undefined,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"possible_permissions" in locals_for_with?locals_for_with.possible_permissions:typeof possible_permissions!=="undefined"?possible_permissions:undefined));;return buf.join("");
 }
 module.exports = template;
+  
 });
+
 require.register("cozy-clearance/modal_share_view", function(exports, require, module){
-    var CozyClearanceModal, Modal, clearanceDiff, contactCollection, contactTypeahead, randomString, request,
+  var CozyClearanceModal, Modal, clearanceDiff, contactCollection, contactTypeahead, randomString, request,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -651,4 +660,5 @@ module.exports = CozyClearanceModal = (function(_super) {
 
 })(Modal);
 
+  
 });
