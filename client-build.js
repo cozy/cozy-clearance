@@ -621,7 +621,7 @@ module.exports = CozyClearanceModal = (function(_super) {
           if (!sendmail) {
             return _this.$el.modal('hide');
           } else {
-            return request('POST', "clearance/" + _this.model.id + "/send", newClearances, {
+            return request('POST', "clearance/" + _this.model.id + "/send", clearances, {
               error: function() {
                 return Modal.error('mail not send');
               },
