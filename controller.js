@@ -40,24 +40,33 @@ module.exports = function(options) {
     })[0];
     return doc.getPublicURL((function(_this) {
       return function(err, url) {
-        var mailOptions;
         if (err) {
           return cb(err);
         }
         url += '?key=' + rule.key;
-        mailOptions = {
-          to: rule.email,
-          subject: mailSubject({
-            doc: doc,
-            url: url
-          }),
-          content: url,
-          html: mailTemplate({
-            doc: doc,
-            url: url
-          })
-        };
-        return CozyAdapter.sendMailFromUser(mailOptions, cb);
+        return async.parallel([
+          function(cb) {
+            return mailSubject({
+              doc: doc,
+              url: url
+            }, cb);
+          }, function(cb) {
+            return mailTemplate({
+              doc: doc,
+              url: url
+            }, cb);
+          }
+        ], function(err, results) {
+          var htmlContent, mailOptions, subject;
+          subject = results[0], htmlContent = results[1];
+          mailOptions = {
+            to: rule.email,
+            subject: subject,
+            content: url,
+            html: htmlContent
+          };
+          return CozyAdapter.sendMailFromUser(mailOptions, cb);
+        });
       };
     })(this));
   };
@@ -101,23 +110,32 @@ module.exports = function(options) {
       });
     });
   };
+  out.getEmailsFromContactFields = function(contact) {
+    var emails, _ref;
+    emails = (_ref = contact.datapoints) != null ? _ref.filter(function(dp) {
+      return dp.name === 'email';
+    }) : void 0;
+    emails = emails.map(function(dp) {
+      return dp.value;
+    });
+    return emails;
+  };
+  out.getContactFullName = function(contact) {
+    var _ref;
+    return contact.fn || ((_ref = contact.n) != null ? _ref.split(';').slice(0, 2).join(' ') : void 0);
+  };
   out.contactList = function(req, res, next) {
     return Contact.request('all', function(err, contacts) {
       if (err) {
         return next(err);
       }
       return res.send(contacts.map(function(contact) {
-        var emails, name, simple, _ref, _ref1, _ref2;
-        name = contact.fn || ((_ref = contact.n) != null ? _ref.split(';').slice(0, 2).join(' ') : void 0);
-        emails = (_ref1 = contact.datapoints) != null ? _ref1.filter(function(dp) {
-          return dp.name === 'email';
-        }) : void 0;
-        emails = emails.map(function(dp) {
-          return dp.value;
-        });
+        var emails, name, simple, _ref;
+        name = out.getContactFullName(contact);
+        emails = out.getEmailsFromContactFields(contact);
         return simple = {
           id: contact.id,
-          hasPicture: ((_ref2 = contact._attachments) != null ? _ref2.picture : void 0) != null,
+          hasPicture: ((_ref = contact._attachments) != null ? _ref.picture : void 0) != null,
           name: name || '?',
           emails: emails || []
         };

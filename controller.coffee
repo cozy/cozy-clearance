@@ -29,13 +29,18 @@ module.exports = (options) ->
 
             url += '?key=' + rule.key
 
-            mailOptions =
-                to: rule.email
-                subject: mailSubject {doc, url}
-                content: url
-                html: mailTemplate {doc, url}
+            async.parallel [
+                (cb) -> mailSubject {doc, url}, cb
+                (cb) -> mailTemplate {doc, url}, cb
+            ], (err, results) ->
+                [subject, htmlContent] = results
+                mailOptions =
+                    to: rule.email
+                    subject: subject
+                    content: url
+                    html: htmlContent
 
-            CozyAdapter.sendMailFromUser mailOptions, cb
+                CozyAdapter.sendMailFromUser mailOptions, cb
 
     # change the whole clearance object
     out.change = (req, res, next) ->
