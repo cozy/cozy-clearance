@@ -151,6 +151,9 @@ module.exports = class CozyClearanceModal extends Modal
         request 'PUT', "clearance/#{@model.id}", @saveData(),
             error: -> Modal.error 'server error occured'
             success: (data) =>
+                # force rerender of the view because this request
+                # doesn't trigger the set
+                @model.trigger 'change'
                 if not sendmail then @$el.modal 'hide'
                 else
                     request 'POST', "clearance/#{@model.id}/send", clearances,
