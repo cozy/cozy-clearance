@@ -49,7 +49,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
             img = if contact.hasPicture
                 '<img width="40" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;'
             else
-                '<i class="icon icon-user"></i>&nbsp;'
+                '<img width="40" src="images/defaultpicture.png">&nbsp;'
             return img + old.call this, contact.display
 
         updater: (value) =>

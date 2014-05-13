@@ -30,6 +30,7 @@ request = (method, url, data, options) ->
 
 module.exports = class CozyClearanceModal extends Modal
 
+    id: 'cozy-clearance-modal'
     template_content: require './modal_share_template'
 
     events: -> _.extend super,
