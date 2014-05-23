@@ -39,6 +39,7 @@ module.exports = class CozyClearanceModal extends Modal
         'click #modal-dialog-share-save': 'onSave'
         'click .revoke': 'revoke'
         'click .show-link': 'showLink'
+        'click #add-contact': 'onAddClicked'
         'change select.changeperm': 'changePerm'
 
     permissions: ->
@@ -111,6 +112,9 @@ module.exports = class CozyClearanceModal extends Modal
     refresh: ->
         @$('.modal-body').html @template_content @getRenderData()
         @afterRender()
+
+    onAddClicked: ->
+        @onGuestAdded @$('#share-input').val()
 
     onGuestAdded: (result) =>
         [email, contactid] = result.split ';'

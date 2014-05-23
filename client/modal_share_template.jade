@@ -12,7 +12,9 @@ if clearance == 'public'
 else
 
   p= t('only you can see')
-  input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
+  form.input-group(role="form")
+    input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
+    a#add-contact.btn.btn-cozy Add
   ul#share-list
     each rule, i in clearance
       - var key = rule.key
