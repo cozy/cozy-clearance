@@ -274,7 +274,7 @@ buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + 
 }
 else
 {
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('only you can see')) ? "" : jade.interp)) + "</p><div class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + "/><a id=\"share-add-current\" class=\"btn btn-cozy\">Add</a></div><ul id=\"share-list\">");
+buf.push("<p>" + (jade.escape(null == (jade.interp = t('only you can see')) ? "" : jade.interp)) + "</p><form role=\"form\" class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " class=\"form-control\"/><a id=\"add-contact\" class=\"btn btn-cozy\">Add</a></form><ul id=\"share-list\">");
 // iterate clearance
 ;(function(){
   var $$obj = clearance;
@@ -464,7 +464,6 @@ module.exports = CozyClearanceModal = (function(_super) {
     this.onNo = __bind(this.onNo, this);
     this.revoke = __bind(this.revoke, this);
     this.onGuestAdded = __bind(this.onGuestAdded, this);
-    this.addCurrentEmail = __bind(this.addCurrentEmail, this);
     this.getClearanceWithContacts = __bind(this.getClearanceWithContacts, this);
     this.getRenderData = __bind(this.getRenderData, this);
     this.typeaheadFilter = __bind(this.typeaheadFilter, this);
@@ -481,9 +480,9 @@ module.exports = CozyClearanceModal = (function(_super) {
       "click #share-public": "makePublic",
       "click #share-private": "makePrivate",
       'click #modal-dialog-share-save': 'onSave',
-      'click #share-add-current': 'addCurrentEmail',
       'click .revoke': 'revoke',
       'click .show-link': 'showLink',
+      'click #add-contact': 'onAddClicked',
       'change select.changeperm': 'changePerm'
     });
   };
@@ -539,8 +538,10 @@ module.exports = CozyClearanceModal = (function(_super) {
     var clearance;
     clearance = this.model.get('clearance') || [];
     if (clearance === 'public') {
-      return this.$('#share-public').addClass('toggled');
+      this.$('#share-public').addClass('toggled');
+      return this.$('input.form-control').focus().select();
     } else {
+      this.$('input#share-input').select();
       this.$('#share-private').addClass('toggled');
       return contactTypeahead(this.$('#share-input'), this.onGuestAdded, this.typeaheadFilter);
     }
@@ -592,7 +593,7 @@ module.exports = CozyClearanceModal = (function(_super) {
     return this.afterRender();
   };
 
-  CozyClearanceModal.prototype.addCurrentEmail = function() {
+  CozyClearanceModal.prototype.onAddClicked = function() {
     return this.onGuestAdded(this.$('#share-input').val());
   };
 

@@ -37,10 +37,9 @@ module.exports = class CozyClearanceModal extends Modal
         "click #share-public": "makePublic"
         "click #share-private": "makePrivate"
         'click #modal-dialog-share-save': 'onSave'
-        'click #share-add-current': 'addCurrentEmail'
         'click .revoke': 'revoke'
         'click .show-link': 'showLink'
-
+        'click #add-contact': 'onAddClicked'
         'change select.changeperm': 'changePerm'
 
     permissions: ->
@@ -77,7 +76,9 @@ module.exports = class CozyClearanceModal extends Modal
         clearance = @model.get('clearance') or []
         if clearance is 'public'
             @$('#share-public').addClass 'toggled'
+            @$('input.form-control').focus().select()
         else
+            @$('input#share-input').select()
             @$('#share-private').addClass 'toggled'
             contactTypeahead @$('#share-input'), @onGuestAdded, @typeaheadFilter
 
@@ -112,7 +113,7 @@ module.exports = class CozyClearanceModal extends Modal
         @$('.modal-body').html @template_content @getRenderData()
         @afterRender()
 
-    addCurrentEmail: =>
+    onAddClicked: ->
         @onGuestAdded @$('#share-input').val()
 
     onGuestAdded: (result) =>

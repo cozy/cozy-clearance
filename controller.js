@@ -40,32 +40,32 @@ module.exports = function(options) {
     })[0];
     return doc.getPublicURL((function(_this) {
       return function(err, url) {
+        var emailOptions;
         if (err) {
           return cb(err);
         }
         url += '?key=' + rule.key;
+        emailOptions = {
+          doc: doc,
+          url: url,
+          rule: rule
+        };
         return async.parallel([
           function(cb) {
-            return mailSubject({
-              doc: doc,
-              url: url
-            }, cb);
+            return mailSubject(emailOptions, cb);
           }, function(cb) {
-            return mailTemplate({
-              doc: doc,
-              url: url
-            }, cb);
+            return mailTemplate(emailOptions, cb);
           }
         ], function(err, results) {
-          var htmlContent, mailOptions, subject;
+          var emailInfo, htmlContent, subject;
           subject = results[0], htmlContent = results[1];
-          mailOptions = {
+          emailInfo = {
             to: rule.email,
             subject: subject,
             content: url,
             html: htmlContent
           };
-          return CozyAdapter.sendMailFromUser(mailOptions, cb);
+          return CozyAdapter.sendMailFromUser(emailInfo, cb);
         });
       };
     })(this));
