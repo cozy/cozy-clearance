@@ -7,7 +7,7 @@ p
 
 if clearance == 'public'
   p= t('modal shared ' + type + ' link msg')
-  input(value=makeURL()).form-control
+  input#public-url(value=makeURL()).form-control
 
 else
 

@@ -270,7 +270,7 @@ var locals_ = (locals || {}),t = locals_.t,type = locals_.type,model = locals_.m
 buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade.interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('public')) ? "" : jade.interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade.interp = t('private')) ? "" : jade.interp)) + "</button></p>");
 if ( clearance == 'public')
 {
-buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "</p><input" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
+buf.push("<p>" + (jade.escape(null == (jade.interp = t('modal shared ' + type + ' link msg')) ? "" : jade.interp)) + "</p><input id=\"public-url\"" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
 }
 else
 {
@@ -539,12 +539,19 @@ module.exports = CozyClearanceModal = (function(_super) {
     clearance = this.model.get('clearance') || [];
     if (clearance === 'public') {
       this.$('#share-public').addClass('toggled');
-      return this.$('input.form-control').focus().select();
     } else {
-      this.$('input#share-input').select();
       this.$('#share-private').addClass('toggled');
-      return contactTypeahead(this.$('#share-input'), this.onGuestAdded, this.typeaheadFilter);
+      contactTypeahead(this.$('#share-input'), this.onGuestAdded, this.typeaheadFilter);
     }
+    return setTimeout((function(_this) {
+      return function() {
+        if (clearance === 'public') {
+          return _this.$('#public-url').focus().select();
+        } else {
+          return _this.$('input#share-input').select();
+        }
+      };
+    })(this), 100);
   };
 
   CozyClearanceModal.prototype.renderContent = function() {

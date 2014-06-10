@@ -76,11 +76,16 @@ module.exports = class CozyClearanceModal extends Modal
         clearance = @model.get('clearance') or []
         if clearance is 'public'
             @$('#share-public').addClass 'toggled'
-            @$('input.form-control').focus().select()
         else
-            @$('input#share-input').select()
             @$('#share-private').addClass 'toggled'
             contactTypeahead @$('#share-input'), @onGuestAdded, @typeaheadFilter
+
+        setTimeout =>
+            if clearance is 'public'
+                @$('#public-url').focus().select()
+            else
+                @$('input#share-input').select()
+        , 100
 
     renderContent: -> $ '<p>Please wait</p>'
 
