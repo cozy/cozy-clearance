@@ -37,8 +37,10 @@ module.exports = class CozyClearanceModal extends Modal
         "click #share-public": "makePublic"
         "click #share-private": "makePrivate"
         'click #modal-dialog-share-save': 'onSave'
+        'click #share-add-current': 'addCurrentEmail'
         'click .revoke': 'revoke'
         'click .show-link': 'showLink'
+
         'change select.changeperm': 'changePerm'
 
     permissions: ->
@@ -110,6 +112,9 @@ module.exports = class CozyClearanceModal extends Modal
         @$('.modal-body').html @template_content @getRenderData()
         @afterRender()
 
+    addCurrentEmail: =>
+        @onGuestAdded @$('#share-input').val()
+
     onGuestAdded: (result) =>
         [email, contactid] = result.split ';'
         return null if @existsEmail email
@@ -133,6 +138,33 @@ module.exports = class CozyClearanceModal extends Modal
             .perm = select.options[select.selectedIndex].value
         @refresh()
 
+    onNo: =>
+        clearance = @model.get('clearance')
+        diffNews = clearanceDiff(clearance, @initState).length isnt 0
+        diffLength = clearance.length isnt @initState.length
+
+        hasChanged = diffNews or diffLength
+
+        if hasChanged
+            Modal.confirm t("confirm"), t('share confirm save'), \
+                t("yes"), t("no"), (confirmed) =>
+                    super if confirmed
+        else
+            super
+
+
+    onYes: =>
+        clearance = @model.get('clearance')
+        diffNews = clearanceDiff(clearance, @initState).length isnt 0
+        if @$('#share-input').val() and not diffNews
+            # nothing new and share-input is filled
+            # may be the user forgot to click add / press enter
+            Modal.confirm t("confirm"), t('share forgot add'), \
+                t("no forgot"), t("yes forgot"), (confirmed) =>
+                    super if confirmed
+        else
+            super
+
     onClose: (saving) =>
         if not saving
             @model.set clearance: @initState
@@ -143,8 +175,10 @@ module.exports = class CozyClearanceModal extends Modal
                     .map (rule) -> rule.email
                     .join ', '
 
-                Modal.confirm t("modal send mails"), text, t("yes"), t("no"), (sendmail) =>
-                    @doSave sendmail, newClearances
+                Modal.confirm t("modal send mails"), text, \
+                    t("yes"), t("no"), (sendmail) =>
+                        @doSave sendmail, newClearances
+
             else
                 @doSave false
 
