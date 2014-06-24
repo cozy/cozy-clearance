@@ -160,6 +160,12 @@ Modal = (function(_super) {
         return _this.onNo();
       };
     })(this));
+    this.$('button.close').click((function(_this) {
+      return function(event) {
+        event.stopPropagation();
+        return _this.onNo();
+      };
+    })(this));
     return $(document).on('keyup', this.closeOnEscape);
   };
 

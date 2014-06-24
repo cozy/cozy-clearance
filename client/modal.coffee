@@ -17,6 +17,9 @@ class Modal extends Backbone.View
         @$el.modal 'show'
         @backdrop = $('modal-backdrop fade in').last()
         @backdrop.on 'click', => @onNo()
+        @$('button.close').click (event) =>
+            event.stopPropagation()
+            @onNo()
         $(document).on 'keyup', @closeOnEscape
 
     events: ->
