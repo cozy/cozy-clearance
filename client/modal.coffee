@@ -51,7 +51,6 @@ class Modal extends Backbone.View
         body  = $('<div class="modal-body">').append @renderContent()
         yesBtn= $('<button id="modal-dialog-yes" class="btn btn-cozy">').text @yes
         foot  = $('<div class="modal-footer">').append yesBtn
-
         foot.prepend $('<button id="modal-dialog-no" class="btn btn-link">').text(@no) if @no
 
         container = $('<div class="modal-content">').append head, body, foot
