@@ -154,12 +154,6 @@ Modal = (function(_super) {
     this.render();
     this.saving = false;
     this.$el.modal('show');
-    this.backdrop = $('modal-backdrop fade in').last();
-    this.backdrop.on('click', (function(_this) {
-      return function() {
-        return _this.onNo();
-      };
-    })(this));
     this.$('button.close').click((function(_this) {
       return function(event) {
         event.stopPropagation();
@@ -172,7 +166,8 @@ Modal = (function(_super) {
   Modal.prototype.events = function() {
     return {
       "click #modal-dialog-no": 'onNo',
-      "click #modal-dialog-yes": 'onYes'
+      "click #modal-dialog-yes": 'onYes',
+      'click': 'onClickAnywhere'
     };
   };
 
@@ -233,6 +228,12 @@ Modal = (function(_super) {
 
   Modal.prototype.renderContent = function() {
     return this.content;
+  };
+
+  Modal.prototype.onClickAnywhere = function(event) {
+    if (event.target.id === this.id) {
+      return this.onNo();
+    }
   };
 
   return Modal;
