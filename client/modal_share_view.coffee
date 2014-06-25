@@ -72,6 +72,12 @@ module.exports = class CozyClearanceModal extends Modal
         @model.set clearance: @lastPrivate or []
         @refresh()
 
+
+    render: ->
+        super()
+        foot = $ '.modal-footer'
+        foot.prepend $ "<span class='pull-left'>#{t 'send email hint'}</span>"
+
     afterRender: () ->
         clearance = @model.get('clearance') or []
         if clearance is 'public'

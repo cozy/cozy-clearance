@@ -15,13 +15,19 @@ class Modal extends Backbone.View
         @render()
         @saving = false
         @$el.modal 'show'
-        @backdrop = $('modal-backdrop fade in').last()
-        @backdrop.on 'click', => @onNo()
+
+        # cut default bootstrap behaviour. Done here rather than in
+        # delegateEvents to be run before bootstrap callback.
+        @$('button.close').click (event) =>
+            event.stopPropagation()
+            @onNo()
+
         $(document).on 'keyup', @closeOnEscape
 
     events: ->
         "click #modal-dialog-no"  : 'onNo'
         "click #modal-dialog-yes" : 'onYes'
+        'click'                   : 'onClickAnywhere'
 
     onNo: ->
         return if @closing
@@ -51,7 +57,6 @@ class Modal extends Backbone.View
         body  = $('<div class="modal-body">').append @renderContent()
         yesBtn= $('<button id="modal-dialog-yes" class="btn btn-cozy">').text @yes
         foot  = $('<div class="modal-footer">').append yesBtn
-
         foot.prepend $('<button id="modal-dialog-no" class="btn btn-link">').text(@no) if @no
 
         container = $('<div class="modal-content">').append head, body, foot
@@ -59,6 +64,9 @@ class Modal extends Backbone.View
         $("body").append @$el.append container
 
     renderContent: -> @content
+
+    # if the target is not a child element, the click targets the backdrop
+    onClickAnywhere: (event) -> @onNo() if event.target.id is @id
 
 Modal.alert = (title, content, cb) ->
     new Modal {title, content, yes: 'ok', no: null, cb}
