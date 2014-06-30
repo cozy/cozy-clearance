@@ -75,7 +75,11 @@ Modal.confirm = (title, content, yesMsg, noMsg, cb) ->
     new Modal {title, content, yes: yesMsg, no:noMsg, cb}
 
 Modal.error = (text, cb) ->
-    new ModalView t("modal error"), text, t("modal ok"), false, cb
-
+    new Modal
+        title: t 'modal error'
+        content: text
+        yes: t 'modal ok'
+        no: false
+        cb: cb
 
 module.exports = Modal
