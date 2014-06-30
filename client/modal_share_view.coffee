@@ -200,7 +200,7 @@ module.exports = class CozyClearanceModal extends Modal
             success: (data) =>
                 # force rerender of the view because this request
                 # doesn't trigger the set
-                @model.trigger 'change'
+                @model.trigger 'change', @model
                 if not sendmail then @$el.modal 'hide'
                 else
                     request 'POST', "clearance/#{@model.id}/send", clearances,
