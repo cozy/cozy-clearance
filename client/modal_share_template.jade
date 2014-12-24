@@ -13,7 +13,7 @@ else
 
   p= t('only you can see')
   form.input-group(role="form")
-    input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
+    input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'), autocomplete="off")
     a#add-contact.btn.btn-cozy Add
   ul#share-list
     each rule, i in clearance
