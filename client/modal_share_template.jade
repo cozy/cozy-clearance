@@ -1,50 +1,62 @@
 p= t('modal question ' + type + ' shareable', {name: model.get('name')})
 p
-    button.button.btn-cozy#share-public= t('public')
+    button.button.btn-cozy#share-public= t('shared')
     | &nbsp;
     button.button.btn-cozy#share-private= t('private')
 
 
-if clearance == 'public'
-  p= t('modal shared ' + type + ' link msg')
-  input#public-url(value=makeURL()).form-control
-
-else
-
+// If no clearance are set, we consider it's a private object.
+if JSON.stringify(clearance) == '[]'
   p= t('only you can see')
+
+else 
+
+  p &nbsp;
+  p= t('modal shared public link msg')
+  if clearance == 'public'
+      input#public-url(value=makeURL()).form-control
+  else
+      input#public-url(value=makeURL()).form-control.disabled
+
+  p &nbsp;
+  p= t('modal shared with people msg')
+
   form.input-group(role="form")
     input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'))
     a#add-contact.btn.btn-cozy Add
   ul#share-list
-    each rule, i in clearance
-      - var key = rule.key
-      li.clearance-line
+    if clearance != 'public'
+        each rule, i in clearance
+          if rule != undefined
+              - var key = rule.key
+              li.clearance-line
 
-        if rule.contact
-          if rule.contact.get('hasPicture')
-            img(width="40" src="clearance/contacts/" + rule.contact.id + ".jpg")
-            | &nbsp;
-          else
-            img(width="40" src="images/defaultpicture.png")
-            | &nbsp;
+                if rule.contact
+                  if rule.contact.get('hasPicture')
+                    img(width="40" src="clearance/contacts/" + rule.contact.id + ".jpg")
+                    | &nbsp;
+                  else
+                    img(width="40" src="images/defaultpicture.png")
+                    | &nbsp;
 
-          span.clearance-name
-            = rule.contact.get('name')
+                  span.clearance-name
+                    = rule.contact.get('name')
 
-        else
-          span.clearance-name
-            = rule.email
+                else
+                  img(width="40" src="images/defaultpicture.png")
+                  span.clearance-name
+                    = rule.email
 
-        - var keys = Object.keys(possible_permissions)
-        if keys.length > 1
-          select.changeperm(data-key=key)
-            each display, perm in possible_permissions
-              option(value=perm, selected=rule.perm==perm)= ' ' + t('perm') + t(display)
-        else
-          = ' ' + t('perm') + possible_permissions[keys[0]]
+                - var keys = Object.keys(possible_permissions)
+                if keys.length > 1
+                  select.changeperm(data-key=key)
+                    each display, perm in possible_permissions
+                      option(value=perm, selected=rule.perm==perm)= ' ' + t('perm') + t(display)
+                else
+                  = ' ' + t('perm') + possible_permissions[keys[0]]
 
-        a.clearance-btn.pull-right.revoke(
-            data-key=key, title=t("revoke")): i.icon-remove
-        a.clearance-btn.pull-right.show-link(
-            data-key=key,title=t("see link"),href=makeURL(key))
-          i.glyphicon.glyphicon-link
+                a.clearance-btn.pull-right.revoke(
+                    data-key=key, title=t("revoke")): i.icon-remove
+                a.clearance-btn.pull-right.show-link(
+                    data-key=key,title=t("see link"),href=makeURL(key))
+                  i.glyphicon.glyphicon-link

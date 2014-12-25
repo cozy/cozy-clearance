@@ -14,7 +14,8 @@ module.exports = (input, onGuestAdded, extrafilter) ->
     input.typeahead
         source: (query) ->
             regexp = new RegExp(query)
-            contacts = contactCollection.filter((contact) -> contact.match regexp)
+            contacts = contactCollection.filter (contact) ->
+                contact.match regexp
             items = []
             contacts.forEach (contact) ->
                 contact.get('emails').forEach (email) ->
@@ -24,12 +25,17 @@ module.exports = (input, onGuestAdded, extrafilter) ->
                         display: "#{contact.get 'name'} &lt;#{email}&gt;"
                         toString: -> "#{email};#{contact.id}"
 
+            console.log contacts
+            console.log items
+
             items = items.filter extrafilter
 
             return items
+
         matcher: (contact) ->
             old = $.fn.typeahead.Constructor::matcher
             return old.call this, contact.display
+
         sorter: (contacts) ->
             beginswith = []
             caseSensitive = []
