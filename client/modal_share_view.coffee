@@ -106,8 +106,10 @@ module.exports = class CozyClearanceModal extends Modal
 
         if @isPublicClearance()
             @$('#public-url').removeClass 'disabled'
+            @$('#public-url').prev('p').removeClass 'disabled'
         else
             @$('#public-url').addClass 'disabled'
+            @$('#public-url').prev('p').addClass 'disabled'
 
     # Change the toggled button state depending on current clearance.
     _checkToggleButtonState: (clearance) ->
@@ -140,13 +142,11 @@ module.exports = class CozyClearanceModal extends Modal
 
     # Display the modal public mode.
     makePublic: ->
-        unless @model.get('clearance') is 'public'
-            @lastPrivate = @model.get('clearance')
-            if @lastClearance?
-                @model.set clearance: @lastClearance
-            else
-                @model.set clearance:'public'
-            @refresh()
+        if @lastClearance?
+            @model.set clearance: @lastClearance
+        else
+            @model.set clearance:'public'
+        @refresh()
 
     # Display the modal private mode.
     makePrivate: ->
@@ -177,8 +177,10 @@ module.exports = class CozyClearanceModal extends Modal
     # to it. It adds a field pointing on it in that case.
     # Warning clearance is wrongly typed. In public mode, clearance is a
     # string. In other modes, it's an array of objects.
-    getClearanceWithContacts: =>
-        clearance = @model.get('clearance') or []
+    getClearanceWithContacts: (clearance) =>
+        unless clearance?
+            clearance = @model.get('clearance') or []
+
         if typeof(clearance) is "object"
             clearance = clearance.map (rule) ->
                 out = _.clone rule
@@ -228,6 +230,11 @@ module.exports = class CozyClearanceModal extends Modal
     # Returns true clearance is set as public
     isPublicClearance: ->
         @model.get('clearance') is 'public'
+
+    # Returns true clearance is set as public
+    isPrivateClearance: ->
+        clearance = @model.get('clearance')
+        typeof(clearance) is "object" and clearance.length is 0
 
     ## Events
 

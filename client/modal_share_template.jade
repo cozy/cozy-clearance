@@ -1,9 +1,11 @@
-p= t('modal question ' + type + ' shareable', {name: model.get('name')})
-p
-    button.button.btn-cozy#share-public= t('shared')
-    | &nbsp;
-    button.button.btn-cozy#share-private= t('private')
-
+div
+  div#select-mode-section
+    p= t('modal question ' + type + ' shareable', {name: model.get('name')})
+    p
+        button.button.btn-cozy#share-public= t('shared')
+        | &nbsp;
+        button.button.btn-cozy#share-private= t('private')
+  p &nbsp;
 
 // If no clearance are set, we consider it's a private object.
 if JSON.stringify(clearance) == '[]'
@@ -11,7 +13,6 @@ if JSON.stringify(clearance) == '[]'
 
 else 
 
-  p &nbsp;
   p= t('modal shared public link msg')
   if clearance == 'public'
       input#public-url(value=makeURL()).form-control

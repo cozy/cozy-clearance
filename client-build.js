@@ -283,14 +283,14 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 ;var locals_for_with = (locals || {});(function (t, type, model, JSON, clearance, makeURL, undefined, Object, possible_permissions) {
-buf.push("<p>" + (jade.escape(null == (jade_interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade_interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('shared')) ? "" : jade_interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('private')) ? "" : jade_interp)) + "</button></p><!-- If no clearance are set, we consider it's a private object.-->");
+buf.push("<div><div id=\"select-mode-section\"><p>" + (jade.escape(null == (jade_interp = t('modal question ' + type + ' shareable', {name: model.get('name')})) ? "" : jade_interp)) + "</p><p><button id=\"share-public\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('shared')) ? "" : jade_interp)) + "</button>&nbsp;<button id=\"share-private\" class=\"button btn-cozy\">" + (jade.escape(null == (jade_interp = t('private')) ? "" : jade_interp)) + "</button></p></div><p>&nbsp;</p></div><!-- If no clearance are set, we consider it's a private object.-->");
 if ( JSON.stringify(clearance) == '[]')
 {
 buf.push("<p>" + (jade.escape(null == (jade_interp = t('only you can see')) ? "" : jade_interp)) + "</p>");
 }
 else
 {
-buf.push("<p>&nbsp;</p><p>" + (jade.escape(null == (jade_interp = t('modal shared public link msg')) ? "" : jade_interp)) + "</p>");
+buf.push("<p>" + (jade.escape(null == (jade_interp = t('modal shared public link msg')) ? "" : jade_interp)) + "</p>");
 if ( clearance == 'public')
 {
 buf.push("<input id=\"public-url\"" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
@@ -299,7 +299,7 @@ else
 {
 buf.push("<input id=\"public-url\"" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control disabled\"/>");
 }
-buf.push("<p>&nbsp;</p><p>" + (jade.escape(null == (jade_interp = t('modal shared with people msg')) ? "" : jade_interp)) + "</p><form role=\"form\" class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " class=\"form-control\"/><a id=\"add-contact\" class=\"btn btn-cozy\">Add</a></form><ul id=\"share-list\">");
+buf.push("<p>&nbsp;</p><p>" + (jade.escape(null == (jade_interp = t('modal shared with people msg')) ? "" : jade_interp)) + "</p><form role=\"form\" class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " autocomplete=\"off\" class=\"form-control\"/><a id=\"add-contact\" class=\"btn btn-cozy\">Add</a></form><ul id=\"share-list\">");
 if ( clearance != 'public')
 {
 // iterate clearance
@@ -568,9 +568,11 @@ module.exports = CozyClearanceModal = (function(_super) {
     this._configureTypeAhead(clearance);
     this._firstFocus(clearance);
     if (this.isPublicClearance()) {
-      return this.$('#public-url').removeClass('disabled');
+      this.$('#public-url').removeClass('disabled');
+      return this.$('#public-url').prev('p').removeClass('disabled');
     } else {
-      return this.$('#public-url').addClass('disabled');
+      this.$('#public-url').addClass('disabled');
+      return this.$('#public-url').prev('p').addClass('disabled');
     }
   };
 
@@ -608,19 +610,16 @@ module.exports = CozyClearanceModal = (function(_super) {
   };
 
   CozyClearanceModal.prototype.makePublic = function() {
-    if (this.model.get('clearance') !== 'public') {
-      this.lastPrivate = this.model.get('clearance');
-      if (this.lastClearance != null) {
-        this.model.set({
-          clearance: this.lastClearance
-        });
-      } else {
-        this.model.set({
-          clearance: 'public'
-        });
-      }
-      return this.refresh();
+    if (this.lastClearance != null) {
+      this.model.set({
+        clearance: this.lastClearance
+      });
+    } else {
+      this.model.set({
+        clearance: 'public'
+      });
     }
+    return this.refresh();
   };
 
   CozyClearanceModal.prototype.makePrivate = function() {
@@ -650,9 +649,10 @@ module.exports = CozyClearanceModal = (function(_super) {
     });
   };
 
-  CozyClearanceModal.prototype.getClearanceWithContacts = function() {
-    var clearance;
-    clearance = this.model.get('clearance') || [];
+  CozyClearanceModal.prototype.getClearanceWithContacts = function(clearance) {
+    if (clearance == null) {
+      clearance = this.model.get('clearance') || [];
+    }
     if (typeof clearance === "object") {
       clearance = clearance.map(function(rule) {
         var out;
@@ -717,6 +717,12 @@ module.exports = CozyClearanceModal = (function(_super) {
 
   CozyClearanceModal.prototype.isPublicClearance = function() {
     return this.model.get('clearance') === 'public';
+  };
+
+  CozyClearanceModal.prototype.isPrivateClearance = function() {
+    var clearance;
+    clearance = this.model.get('clearance');
+    return typeof clearance === "object" && clearance.length === 0;
   };
 
   CozyClearanceModal.prototype.onAddClicked = function() {
