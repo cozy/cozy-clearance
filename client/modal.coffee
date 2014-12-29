@@ -30,18 +30,18 @@ class Modal extends Backbone.View
         'click'                   : 'onClickAnywhere'
 
     onNo: ->
-        return if @closing
-        @closing = true
-        @$el.modal 'hide'
-        setTimeout (=> @remove()), 500
+        @close()
         @cb false
 
     onYes: ->
+        @close()
+        @cb true
+
+    close: ->
         return if @closing
         @closing = true
         @$el.modal 'hide'
         setTimeout (=> @remove()), 500
-        @cb true
 
     closeOnEscape: (e) =>
         @onNo() if e.which is 27
