@@ -290,7 +290,7 @@ buf.push("<p>" + (jade.escape(null == (jade_interp = t('only you can see')) ? ""
 }
 else
 {
-buf.push("<p>" + (jade.escape(null == (jade_interp = t('modal shared public link msg')) ? "" : jade_interp)) + "</p>");
+buf.push("<div class=\"public-url\"><p>" + (jade.escape(null == (jade_interp = t('modal shared public link msg')) ? "" : jade_interp)) + "</p>");
 if ( clearance == 'public')
 {
 buf.push("<input id=\"public-url\"" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control\"/>");
@@ -299,7 +299,7 @@ else
 {
 buf.push("<input id=\"public-url\"" + (jade.attr("value", makeURL(), true, false)) + " class=\"form-control disabled\"/>");
 }
-buf.push("<p>&nbsp;</p><p>" + (jade.escape(null == (jade_interp = t('modal shared with people msg')) ? "" : jade_interp)) + "</p><form role=\"form\" class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " autocomplete=\"off\" class=\"form-control\"/><a id=\"add-contact\" class=\"btn btn-cozy\">Add</a></form><ul id=\"share-list\">");
+buf.push("<p>&nbsp;</p></div><p>" + (jade.escape(null == (jade_interp = t('modal shared with people msg')) ? "" : jade_interp)) + "</p><form role=\"form\" class=\"input-group\"><input id=\"share-input\" type=\"text\"" + (jade.attr("placeholder", t('modal shared ' + type + ' custom msg'), true, false)) + " autocomplete=\"off\" class=\"form-control\"/><a id=\"add-contact\" class=\"btn btn-cozy\">Add</a></form><ul id=\"share-list\">");
 if ( clearance != 'public')
 {
 // iterate clearance
@@ -432,7 +432,7 @@ buf.push("<a" + (jade.attr("data-key", key, true, false)) + (jade.attr("title", 
 
 }
 buf.push("</ul>");
-}}("t" in locals_for_with?locals_for_with.t:typeof t!=="undefined"?t:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"JSON" in locals_for_with?locals_for_with.JSON:typeof JSON!=="undefined"?JSON:undefined,"clearance" in locals_for_with?locals_for_with.clearance:typeof clearance!=="undefined"?clearance:undefined,"makeURL" in locals_for_with?locals_for_with.makeURL:typeof makeURL!=="undefined"?makeURL:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"possible_permissions" in locals_for_with?locals_for_with.possible_permissions:typeof possible_permissions!=="undefined"?possible_permissions:undefined));;return buf.join("");
+}}.call(this,"t" in locals_for_with?locals_for_with.t:typeof t!=="undefined"?t:undefined,"type" in locals_for_with?locals_for_with.type:typeof type!=="undefined"?type:undefined,"model" in locals_for_with?locals_for_with.model:typeof model!=="undefined"?model:undefined,"JSON" in locals_for_with?locals_for_with.JSON:typeof JSON!=="undefined"?JSON:undefined,"clearance" in locals_for_with?locals_for_with.clearance:typeof clearance!=="undefined"?clearance:undefined,"makeURL" in locals_for_with?locals_for_with.makeURL:typeof makeURL!=="undefined"?makeURL:undefined,"undefined" in locals_for_with?locals_for_with.undefined:typeof undefined!=="undefined"?undefined:undefined,"Object" in locals_for_with?locals_for_with.Object:typeof Object!=="undefined"?Object:undefined,"possible_permissions" in locals_for_with?locals_for_with.possible_permissions:typeof possible_permissions!=="undefined"?possible_permissions:undefined));;return buf.join("");
 }
 module.exports = template;
   
@@ -497,7 +497,6 @@ module.exports = CozyClearanceModal = (function(_super) {
     this.onNo = __bind(this.onNo, this);
     this.revoke = __bind(this.revoke, this);
     this.onGuestAdded = __bind(this.onGuestAdded, this);
-    this.showLink = __bind(this.showLink, this);
     this.getClearanceWithContacts = __bind(this.getClearanceWithContacts, this);
     this.existsEmail = __bind(this.existsEmail, this);
     this.typeaheadFilter = __bind(this.typeaheadFilter, this);
@@ -554,7 +553,7 @@ module.exports = CozyClearanceModal = (function(_super) {
     var body;
     CozyClearanceModal.__super__.render.call(this);
     body = $('.modal-body');
-    return body.append($("<span class='pull-left'>" + (t('send email hint')) + "</span>"));
+    return body.append($("<span class='pull-left email-hint'>" + (t('send email hint')) + "</span>"));
   };
 
   CozyClearanceModal.prototype.renderContent = function() {
@@ -568,11 +567,11 @@ module.exports = CozyClearanceModal = (function(_super) {
     this._configureTypeAhead(clearance);
     this._firstFocus(clearance);
     if (this.isPublicClearance()) {
-      this.$('#public-url').removeClass('disabled');
-      return this.$('#public-url').prev('p').removeClass('disabled');
+      this.$('.public-url').show();
+      return this.$('.email-hint').hide();
     } else {
-      this.$('#public-url').addClass('disabled');
-      return this.$('#public-url').prev('p').addClass('disabled');
+      this.$('.public-url').hide();
+      return this.$('.email-hint').show();
     }
   };
 
@@ -784,13 +783,10 @@ module.exports = CozyClearanceModal = (function(_super) {
     diffLength = clearance.length !== this.initState.length;
     hasChanged = diffNews || diffLength;
     if (hasChanged) {
-      return Modal.confirm(t("confirm"), t('share confirm save'), t("yes"), t("no"), (function(_this) {
-        return function(confirmed) {
-          if (confirmed) {
-            return CozyClearanceModal.__super__.onNo.apply(_this, arguments);
-          }
-        };
-      })(this));
+      Modal.confirm(t("confirm"), t('share confirm save'), t("yes"), t("no"), function(confirmed) {});
+      if (confirmed) {
+        return CozyClearanceModal.__super__.onNo.apply(this, arguments);
+      }
     } else {
       return CozyClearanceModal.__super__.onNo.apply(this, arguments);
     }
@@ -801,13 +797,10 @@ module.exports = CozyClearanceModal = (function(_super) {
     clearance = this.model.get('clearance');
     diffNews = clearanceDiff(clearance, this.initState).length !== 0;
     if (this.$('#share-input').val() && !diffNews) {
-      return Modal.confirm(t("confirm"), t('share forgot add'), t("no forgot"), t("yes forgot"), (function(_this) {
-        return function(confirmed) {
-          if (confirmed) {
-            return CozyClearanceModal.__super__.onYes.apply(_this, arguments);
-          }
-        };
-      })(this));
+      Modal.confirm(t("confirm"), t('share forgot add'), t("no forgot"), t("yes forgot"), function(confirmed) {});
+      if (confirmed) {
+        return CozyClearanceModal.__super__.onYes.apply(this, arguments);
+      }
     } else {
       return CozyClearanceModal.__super__.onYes.apply(this, arguments);
     }
@@ -825,11 +818,8 @@ module.exports = CozyClearanceModal = (function(_super) {
         text = t("send mails question") + newClearances.map(function(rule) {
           return rule.email;
         }).join(', ');
-        return Modal.confirm(t("modal send mails"), text, t("yes"), t("no"), (function(_this) {
-          return function(sendmail) {
-            return _this.doSave(sendmail, newClearances);
-          };
-        })(this));
+        Modal.confirm(t("modal send mails"), text, t("yes"), t("no"), function(sendmail) {});
+        return this.doSave(sendmail, newClearances);
       } else {
         return this.doSave(false);
       }

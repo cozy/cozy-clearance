@@ -13,13 +13,14 @@ if JSON.stringify(clearance) == '[]'
 
 else 
 
-  p= t('modal shared public link msg')
-  if clearance == 'public'
-      input#public-url(value=makeURL()).form-control
-  else
-      input#public-url(value=makeURL()).form-control.disabled
+  div.public-url
+      p= t('modal shared public link msg')
+      if clearance == 'public'
+          input#public-url(value=makeURL()).form-control
+      else
+          input#public-url(value=makeURL()).form-control.disabled
+      p &nbsp;
 
-  p &nbsp;
   p= t('modal shared with people msg')
 
   form.input-group(role="form")

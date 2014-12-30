@@ -87,7 +87,7 @@ module.exports = class CozyClearanceModal extends Modal
     render: ->
         super()
         body = $ '.modal-body'
-        body.append $ "<span class='pull-left'>#{t 'send email hint'}</span>"
+        body.append $ "<span class='pull-left email-hint'>#{t 'send email hint'}</span>"
 
     # This method is aimed to be overrriden.
     renderContent: ->
@@ -97,7 +97,7 @@ module.exports = class CozyClearanceModal extends Modal
     # * Change the toggled button state.
     # * Configure the contact field autocomplete type ahead.
     # * Focus on the url or contact field depending on the configuration.
-    afterRender: () ->
+    afterRender: ->
         clearance = @model.get('clearance') or []
 
         @_checkToggleButtonState clearance
@@ -105,11 +105,11 @@ module.exports = class CozyClearanceModal extends Modal
         @_firstFocus clearance
 
         if @isPublicClearance()
-            @$('#public-url').removeClass 'disabled'
-            @$('#public-url').prev('p').removeClass 'disabled'
+            @$('.public-url').show()
+            @$('.email-hint').hide()
         else
-            @$('#public-url').addClass 'disabled'
-            @$('#public-url').prev('p').addClass 'disabled'
+            @$('.public-url').hide()
+            @$('.email-hint').show()
 
     # Change the toggled button state depending on current clearance.
     _checkToggleButtonState: (clearance) ->
@@ -208,7 +208,7 @@ module.exports = class CozyClearanceModal extends Modal
         clearance: @model.get('clearance')
 
     # Display link widget for given contact in the guest list.
-    showLink: (event) =>
+    showLink: (event) ->
         line = $(event.target).parents('li')
         if line.find('.linkshow').length is 0
             link = $(event.currentTarget)
@@ -223,7 +223,7 @@ module.exports = class CozyClearanceModal extends Modal
             urlField.focus().select()
             event.preventDefault()
         else
-           line.find('.linkshow').remove()
+            line.find('.linkshow').remove()
 
         return false
 
@@ -290,8 +290,8 @@ module.exports = class CozyClearanceModal extends Modal
 
         if hasChanged
             Modal.confirm t("confirm"), t('share confirm save'), \
-                t("yes"), t("no"), (confirmed) =>
-                    super if confirmed
+                t("yes"), t("no"), (confirmed) ->
+                super if confirmed
         else
             super
 
@@ -302,8 +302,8 @@ module.exports = class CozyClearanceModal extends Modal
             # nothing new and share-input is filled
             # may be the user forgot to click add / press enter
             Modal.confirm t("confirm"), t('share forgot add'), \
-                t("no forgot"), t("yes forgot"), (confirmed) =>
-                    super if confirmed
+                t("no forgot"), t("yes forgot"), (confirmed) ->
+                super if confirmed
         else
             super
 
@@ -318,8 +318,8 @@ module.exports = class CozyClearanceModal extends Modal
                     .join ', '
 
                 Modal.confirm t("modal send mails"), text, \
-                    t("yes"), t("no"), (sendmail) =>
-                        @doSave sendmail, newClearances
+                    t("yes"), t("no"), (sendmail) ->
+                    @doSave sendmail, newClearances
 
             else
                 @doSave false
