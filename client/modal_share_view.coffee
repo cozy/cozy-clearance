@@ -86,8 +86,8 @@ module.exports = class CozyClearanceModal extends Modal
     # TODO: find why it isn't displayed.
     render: ->
         super()
-        body = $ '.modal-body'
-        body.append $ "<span class='pull-left email-hint'>#{t 'send email hint'}</span>"
+        $('.email-hint').remove()
+        $('.modal-footer').prepend $("<span class='pull-left email-hint'>#{t 'send email hint'}</span>")
 
     # This method is aimed to be overrriden.
     renderContent: ->
@@ -106,10 +106,13 @@ module.exports = class CozyClearanceModal extends Modal
 
         if @isPublicClearance()
             @$('.public-url').show()
-            @$('.email-hint').hide()
+            $('.email-hint').hide()
         else
             @$('.public-url').hide()
-            @$('.email-hint').show()
+            if @isPrivateClearance()
+                $('.email-hint').hide()
+            else
+                $('.email-hint').show()
 
     # Change the toggled button state depending on current clearance.
     _checkToggleButtonState: (clearance) ->
@@ -290,8 +293,8 @@ module.exports = class CozyClearanceModal extends Modal
 
         if hasChanged
             Modal.confirm t("confirm"), t('share confirm save'), \
-                t("yes"), t("no"), (confirmed) ->
-                super if confirmed
+                t("yes"), t("no"), (confirmed) =>
+                    super if confirmed
         else
             super
 
@@ -302,8 +305,8 @@ module.exports = class CozyClearanceModal extends Modal
             # nothing new and share-input is filled
             # may be the user forgot to click add / press enter
             Modal.confirm t("confirm"), t('share forgot add'), \
-                t("no forgot"), t("yes forgot"), (confirmed) ->
-                super if confirmed
+                t("no forgot"), t("yes forgot"), (confirmed) =>
+                    super if confirmed
         else
             super
 
@@ -318,8 +321,8 @@ module.exports = class CozyClearanceModal extends Modal
                     .join ', '
 
                 Modal.confirm t("modal send mails"), text, \
-                    t("yes"), t("no"), (sendmail) ->
-                    @doSave sendmail, newClearances
+                    t("yes"), t("no"), (sendmail) =>
+                        @doSave sendmail, newClearances
 
             else
                 @doSave false

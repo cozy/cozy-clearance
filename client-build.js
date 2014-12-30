@@ -7,15 +7,13 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
       return true;
     };
   }
-  input.on('keyup', (function(_this) {
-    return function(event) {
-      if (event.which === 13 && !input.data('typeahead').shown) {
-        onGuestAdded(input.val());
-        input.val('');
-        return event.preventDefault();
-      }
-    };
-  })(this));
+  input.on('keyup', function(event) {
+    if (event.which === 13 && !input.data('typeahead').shown) {
+      onGuestAdded(input.val());
+      input.val('');
+      return event.preventDefault();
+    }
+  });
   return input.typeahead({
     source: function(query) {
       var contacts, items, regexp;
@@ -36,8 +34,6 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
           });
         });
       });
-      console.log(contacts);
-      console.log(items);
       items = items.filter(extrafilter);
       return items;
     },
@@ -69,12 +65,10 @@ require.register("cozy-clearance/contact_autocomplete", function(exports, requir
       img = contact.hasPicture ? '<img width="40" src="clearance/contacts/' + contact.id + '.jpg">&nbsp;' : '<img width="40" src="images/defaultpicture.png">&nbsp;';
       return img + old.call(this, contact.display);
     },
-    updater: (function(_this) {
-      return function(value) {
-        onGuestAdded(value);
-        return "";
-      };
-    })(this)
+    updater: function(value) {
+      onGuestAdded(value);
+      return "";
+    }
   });
 };
 
@@ -550,10 +544,9 @@ module.exports = CozyClearanceModal = (function(_super) {
   };
 
   CozyClearanceModal.prototype.render = function() {
-    var body;
     CozyClearanceModal.__super__.render.call(this);
-    body = $('.modal-body');
-    return body.append($("<span class='pull-left email-hint'>" + (t('send email hint')) + "</span>"));
+    $('.email-hint').remove();
+    return $('.modal-footer').prepend($("<span class='pull-left email-hint'>" + (t('send email hint')) + "</span>"));
   };
 
   CozyClearanceModal.prototype.renderContent = function() {
@@ -568,10 +561,14 @@ module.exports = CozyClearanceModal = (function(_super) {
     this._firstFocus(clearance);
     if (this.isPublicClearance()) {
       this.$('.public-url').show();
-      return this.$('.email-hint').hide();
+      return $('.email-hint').hide();
     } else {
       this.$('.public-url').hide();
-      return this.$('.email-hint').show();
+      if (this.isPrivateClearance()) {
+        return $('.email-hint').hide();
+      } else {
+        return $('.email-hint').show();
+      }
     }
   };
 
@@ -783,10 +780,13 @@ module.exports = CozyClearanceModal = (function(_super) {
     diffLength = clearance.length !== this.initState.length;
     hasChanged = diffNews || diffLength;
     if (hasChanged) {
-      Modal.confirm(t("confirm"), t('share confirm save'), t("yes"), t("no"), function(confirmed) {});
-      if (confirmed) {
-        return CozyClearanceModal.__super__.onNo.apply(this, arguments);
-      }
+      return Modal.confirm(t("confirm"), t('share confirm save'), t("yes"), t("no"), (function(_this) {
+        return function(confirmed) {
+          if (confirmed) {
+            return CozyClearanceModal.__super__.onNo.apply(_this, arguments);
+          }
+        };
+      })(this));
     } else {
       return CozyClearanceModal.__super__.onNo.apply(this, arguments);
     }
@@ -797,10 +797,13 @@ module.exports = CozyClearanceModal = (function(_super) {
     clearance = this.model.get('clearance');
     diffNews = clearanceDiff(clearance, this.initState).length !== 0;
     if (this.$('#share-input').val() && !diffNews) {
-      Modal.confirm(t("confirm"), t('share forgot add'), t("no forgot"), t("yes forgot"), function(confirmed) {});
-      if (confirmed) {
-        return CozyClearanceModal.__super__.onYes.apply(this, arguments);
-      }
+      return Modal.confirm(t("confirm"), t('share forgot add'), t("no forgot"), t("yes forgot"), (function(_this) {
+        return function(confirmed) {
+          if (confirmed) {
+            return CozyClearanceModal.__super__.onYes.apply(_this, arguments);
+          }
+        };
+      })(this));
     } else {
       return CozyClearanceModal.__super__.onYes.apply(this, arguments);
     }
@@ -818,8 +821,11 @@ module.exports = CozyClearanceModal = (function(_super) {
         text = t("send mails question") + newClearances.map(function(rule) {
           return rule.email;
         }).join(', ');
-        Modal.confirm(t("modal send mails"), text, t("yes"), t("no"), function(sendmail) {});
-        return this.doSave(sendmail, newClearances);
+        return Modal.confirm(t("modal send mails"), text, t("yes"), t("no"), (function(_this) {
+          return function(sendmail) {
+            return _this.doSave(sendmail, newClearances);
+          };
+        })(this));
       } else {
         return this.doSave(false);
       }

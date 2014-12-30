@@ -4,7 +4,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
     extrafilter ?= -> true
 
     # email not in contact
-    input.on 'keyup', (event) =>
+    input.on 'keyup', (event) ->
         if event.which is 13 and not input.data('typeahead').shown
             onGuestAdded input.val()
             input.val ''
@@ -25,9 +25,6 @@ module.exports = (input, onGuestAdded, extrafilter) ->
                         display: "#{contact.get 'name'} &lt;#{email}&gt;"
                         toString: -> "#{email};#{contact.id}"
 
-            console.log contacts
-            console.log items
-
             items = items.filter extrafilter
 
             return items
@@ -43,7 +40,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
 
             while (contact = contacts.shift())
                 item = contact.display
-                if !item.toLowerCase().indexOf this.query.toLowerCase()
+                if not item.toLowerCase().indexOf this.query.toLowerCase()
                     beginswith.push contact
                 else if ~item.indexOf this.query then caseSensitive.push contact
                 else caseInsensitive.push contact
@@ -58,6 +55,6 @@ module.exports = (input, onGuestAdded, extrafilter) ->
                 '<img width="40" src="images/defaultpicture.png">&nbsp;'
             return img + old.call this, contact.display
 
-        updater: (value) =>
+        updater: (value) ->
             onGuestAdded value
             return ""
