@@ -106,6 +106,39 @@ class YourModalView extends CozyClearanceModal
 ```
 See [cozy-files](https://github.com/mycozycloud/cozy-files/blob/master/client/app/views/modal_share.coffee) for heavy customization.
 
+## Locales
+
+The client-side library use the following locale keys:
+ - "cancel"
+ - "confirm"
+ - "copy paste link"
+ - "mail not send"
+ - "modal error"
+ - "modal ok"
+ - "modal question " + type + " shareable"
+ - "modal send mails
+ - "modal shared " + type + " custom msg"
+ - "modal shared public link msg"
+ - "modal shared with people msg"
+ - "no forgot"
+ - "no"
+ - "only you can see"
+ - "perm"
+ - "private"
+ - "r"
+ - "revoke"
+ - "save"
+ - "see link"
+ - "send email hint"
+ - "send mails question"
+ - "server error occured"
+ - "share confirm save"
+ - "share forgot add"
+ - "shared"
+ - "sharing"
+ - "yes forgot"
+ - "yes"
+
 ## Contribute
 
 Use [coffeegulp](https://github.com/minibikini/coffeegulp) to build the client
