@@ -665,7 +665,7 @@ module.exports = CozyClearanceModal = (function(_super) {
   CozyClearanceModal.prototype.doSave = function(sendmail, clearances) {
     return request('PUT', "clearance/" + this.model.id, this.saveData(), {
       error: function() {
-        return Modal.error('server error occured');
+        return Modal.error(t('server error occured'));
       },
       success: (function(_this) {
         return function(data) {
@@ -675,7 +675,7 @@ module.exports = CozyClearanceModal = (function(_super) {
           } else {
             return request('POST', "clearance/" + _this.model.id + "/send", clearances, {
               error: function() {
-                return Modal.error('mail not send');
+                return Modal.error(t('mail not send'));
               },
               success: function(data) {
                 return _this.$el.modal('hide');

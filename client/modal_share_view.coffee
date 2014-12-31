@@ -195,7 +195,7 @@ module.exports = class CozyClearanceModal extends Modal
     # Save changes to server and send mail to guests if needed.
     doSave: (sendmail, clearances) ->
         request 'PUT', "clearance/#{@model.id}", @saveData(),
-            error: -> Modal.error 'server error occured'
+            error: -> Modal.error(t 'server error occured')
             success: (data) =>
                 # force rerender of the view because this request
                 # doesn't trigger the set
@@ -203,7 +203,7 @@ module.exports = class CozyClearanceModal extends Modal
                 if not sendmail then @$el.modal 'hide'
                 else
                     request 'POST', "clearance/#{@model.id}/send", clearances,
-                        error: -> Modal.error 'mail not send'
+                        error: -> Modal.error(t 'mail not send')
                         success: (data) => @$el.modal 'hide'
 
     # Returns data to save.
