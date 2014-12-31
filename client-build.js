@@ -726,20 +726,25 @@ module.exports = CozyClearanceModal = (function(_super) {
   };
 
   CozyClearanceModal.prototype.onGuestAdded = function(result) {
-    var contactid, email, isEmailEmpty, key, perm, _ref;
+    var clearance, contactid, email, isEmailEmpty, key, perm, _ref;
     _ref = result.split(';'), email = _ref[0], contactid = _ref[1];
     isEmailEmpty = email === '' || email.indexOf('@') < 1;
     if (!(this.existsEmail(email) || isEmailEmpty)) {
       key = randomString();
       perm = 'r';
       if (this.isPublicClearance()) {
-        this.model.set('clearance', []);
+        clearance = [];
+      } else {
+        clearance = this.model.get('clearance');
       }
-      this.model.get('clearance').push({
+      clearance.push({
         contactid: contactid,
         email: email,
         key: key,
         perm: perm
+      });
+      this.model.set({
+        clearance: clearance
       });
       return this.refresh();
     } else {

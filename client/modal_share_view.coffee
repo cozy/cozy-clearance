@@ -255,8 +255,12 @@ module.exports = class CozyClearanceModal extends Modal
             key = randomString()
             perm = 'r'
 
-            @model.set 'clearance', [] if @isPublicClearance()
-            @model.get('clearance').push {contactid, email, key, perm}
+            if @isPublicClearance()
+                clearance = []
+            else
+                clearance = @model.get('clearance')
+            clearance.push {contactid, email, key, perm}
+            @model.set clearance: clearance
             @refresh()
         else
             return null
