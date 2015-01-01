@@ -3,8 +3,8 @@ class Modal extends Backbone.View
     id:'modal-dialog'
     className:'modal fade'
     attributes:
-        'data-backdrop':"static" #prevent bs closing by backdrop
-        'data-keyboard':"false"  #prevent bs closing by esc
+        'data-backdrop': "static" #prevent bs closing by backdrop
+        'data-keyboard': "false"  #prevent bs closing by esc
 
     initialize: (options) ->
         @title ?= options.title

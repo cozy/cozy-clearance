@@ -86,8 +86,8 @@ module.exports = class CozyClearanceModal extends Modal
     # TODO: find why it isn't displayed.
     render: ->
         super()
-        body = $ '.modal-body'
-        body.append $ "<span class='pull-left'>#{t 'send email hint'}</span>"
+        $('.email-hint').remove()
+        $('.modal-footer').prepend $("<span class='pull-left email-hint'>#{t 'send email hint'}</span>")
 
     # This method is aimed to be overrriden.
     renderContent: ->
@@ -97,7 +97,7 @@ module.exports = class CozyClearanceModal extends Modal
     # * Change the toggled button state.
     # * Configure the contact field autocomplete type ahead.
     # * Focus on the url or contact field depending on the configuration.
-    afterRender: () ->
+    afterRender: ->
         clearance = @model.get('clearance') or []
 
         @_checkToggleButtonState clearance
@@ -105,11 +105,14 @@ module.exports = class CozyClearanceModal extends Modal
         @_firstFocus clearance
 
         if @isPublicClearance()
-            @$('#public-url').removeClass 'disabled'
-            @$('#public-url').prev('p').removeClass 'disabled'
+            @$('.public-url').show()
+            $('.email-hint').hide()
         else
-            @$('#public-url').addClass 'disabled'
-            @$('#public-url').prev('p').addClass 'disabled'
+            @$('.public-url').hide()
+            if @isPrivateClearance()
+                $('.email-hint').hide()
+            else
+                $('.email-hint').show()
 
     # Change the toggled button state depending on current clearance.
     _checkToggleButtonState: (clearance) ->
@@ -192,7 +195,7 @@ module.exports = class CozyClearanceModal extends Modal
     # Save changes to server and send mail to guests if needed.
     doSave: (sendmail, clearances) ->
         request 'PUT', "clearance/#{@model.id}", @saveData(),
-            error: -> Modal.error 'server error occured'
+            error: -> Modal.error(t 'server error occured')
             success: (data) =>
                 # force rerender of the view because this request
                 # doesn't trigger the set
@@ -200,7 +203,7 @@ module.exports = class CozyClearanceModal extends Modal
                 if not sendmail then @$el.modal 'hide'
                 else
                     request 'POST', "clearance/#{@model.id}/send", clearances,
-                        error: -> Modal.error 'mail not send'
+                        error: -> Modal.error(t 'mail not send')
                         success: (data) => @$el.modal 'hide'
 
     # Returns data to save.
@@ -208,7 +211,7 @@ module.exports = class CozyClearanceModal extends Modal
         clearance: @model.get('clearance')
 
     # Display link widget for given contact in the guest list.
-    showLink: (event) =>
+    showLink: (event) ->
         line = $(event.target).parents('li')
         if line.find('.linkshow').length is 0
             link = $(event.currentTarget)
@@ -223,7 +226,7 @@ module.exports = class CozyClearanceModal extends Modal
             urlField.focus().select()
             event.preventDefault()
         else
-           line.find('.linkshow').remove()
+            line.find('.linkshow').remove()
 
         return false
 
@@ -252,8 +255,12 @@ module.exports = class CozyClearanceModal extends Modal
             key = randomString()
             perm = 'r'
 
-            @model.set 'clearance', [] if @isPublicClearance()
-            @model.get('clearance').push {contactid, email, key, perm}
+            if @isPublicClearance()
+                clearance = []
+            else
+                clearance = @model.get('clearance')
+            clearance.push {contactid, email, key, perm}
+            @model.set clearance: clearance
             @refresh()
         else
             return null
