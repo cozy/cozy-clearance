@@ -11,7 +11,7 @@ div
 if JSON.stringify(clearance) == '[]'
   p= t('only you can see')
 
-else 
+else
 
   div.public-url
       p= t('modal shared public link msg')
@@ -21,7 +21,9 @@ else
           input#public-url(value=makeURL()).form-control.disabled
       p &nbsp;
 
-  p= t('modal shared with people msg')
+  p
+    span.public-url= t('or')
+    | &nbsp;#{t('modal shared with people msg')}
 
   form.input-group(role="form")
     input#share-input.form-control(type="text", placeholder=t('modal shared ' + type + ' custom msg'), autocomplete="off")
