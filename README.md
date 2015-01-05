@@ -70,6 +70,10 @@ clearanceCtl = clearance.controller
     param: # fetch and save in req.doc
 'clearance/contacts':
     get: clearanceCtl.contactList
+'clearance/contacts/:contactid':
+    get: clearanceCtl.contact
+'clearance/contacts/:contactid.jpg':
+    get: sharing.contactPicture
 'clearance/:docid'
     put: clearanceCtl.change
 'clearance/:docid/send':
@@ -105,6 +109,14 @@ class YourModalView extends CozyClearanceModal
 
 ```
 See [cozy-files](https://github.com/mycozycloud/cozy-files/blob/master/client/app/views/modal_share.coffee) for heavy customization.
+
+The contactCollection can be plugged to your app's realtime :
+```coffee
+contactCollection = require 'cozy-clearance/contact_collection'
+socketListener.process = (event) ->
+   {doctype, operation, id} = event
+   # ...
+   contactCollection.handleRealtimeContactEvent event
 
 ## Locales
 

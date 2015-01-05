@@ -77,18 +77,20 @@ module.exports = (options) ->
     out.getContactFullName = (contact) ->
         contact.fn or contact.n?.split(';')[0..1].join(' ')
 
+    out.simplifyContact = (contact) ->
+        name = out.getContactFullName contact
+        emails = out.getEmailsFromContactFields contact
+        return simple =
+            id: contact.id
+            hasPicture: contact._attachments?.picture?
+            name: name or '?'
+            emails: emails or []
+
     # contact list for autocomplete
     out.contactList = (req, res, next) ->
         Contact.request 'all', (err, contacts) ->
             return next err if err
-            res.send contacts.map (contact) ->
-                name = out.getContactFullName contact
-                emails = out.getEmailsFromContactFields contact
-                return simple =
-                    id: contact.id
-                    hasPicture: contact._attachments?.picture?
-                    name: name or '?'
-                    emails: emails or []
+            res.send contacts.map out.simplifyContact
 
     out.contactPicture = (req, res, next) ->
         Contact.find req.params.contactid, (err, contact) ->
@@ -102,5 +104,17 @@ module.exports = (options) ->
             stream = contact.getFile 'picture', (err) ->
                 return res.error 500, "File fetching failed.", err if err
             stream.pipe res
+
+    out.contact = (req, res, next) ->
+        Contact.find req.params.contactid, (err, contact) ->
+            return next err if err
+
+            unless contact
+                err = new Error 'not found'
+                err.status = 404
+                return next err
+
+            res.send out.simplifyContact contact
+
 
     return out
