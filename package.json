@@ -1,6 +1,6 @@
 {
   "name": "cozy-clearance",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "cozy-clearance provides clearance management",
   "main": "index.js",
   "scripts": {
