@@ -1,0 +1,7 @@
+client/
+docs/
+gulpfile.coffee
+controller.coffee
+index.coffee
+test.coffee
+.travis.yml
