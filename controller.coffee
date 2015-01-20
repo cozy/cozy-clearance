@@ -1,17 +1,7 @@
 clearance = require './index'
 async = require 'async'
 
-americano = require 'americano-cozy'
-Contact = americano.getModel 'Contact',
-    fn            : String
-    n             : String
-    _attachments  : (x) -> x
-    datapoints    : (x) -> x
-
-# find the cozy adapter
-CozyAdapter = try require 'americano-cozy/node_modules/jugglingdb-cozy-adapter'
-catch e then require 'jugglingdb-cozy-adapter'
-
+jugglingInAmericano = 'americano-cozy/node_modules/jugglingdb-cozy-adapter'
 
 module.exports = (options) ->
 
@@ -19,6 +9,33 @@ module.exports = (options) ->
 
     mailSubject = options.mailSubject
     mailTemplate = options.mailTemplate
+
+
+    # support both cozydb & americano-cozy
+    try
+        cozydb = require 'cozydb'
+        CozyAdapter = cozydb.api
+        Contact = cozydb.getModel 'Contact',
+            fn            : String
+            n             : String
+            _attachments  : Object
+            datapoints    : [Object]
+
+
+
+    catch err
+        americano = require 'americano-cozy'
+        CozyAdapter = try require 'americano-cozy/node_modules/' + \
+                                  'jugglingdb-cozy-adapter'
+        catch e then require 'jugglingdb-cozy-adapter'
+        americano.getModel 'Contact',
+            fn            : String
+            n             : String
+            _attachments  : (x) -> x
+            datapoints    : (x) -> x
+
+
+
 
     # send a share mail
     sendMail = (doc, key, cb) ->
