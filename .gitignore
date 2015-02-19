@@ -14,4 +14,7 @@ results
 
 node_modules
 
+controller.js
+index.js
+
 npm-debug.log
