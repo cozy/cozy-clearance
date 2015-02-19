@@ -1,5 +1,6 @@
 clearance = require './index'
 async = require 'async'
+urlHelpers = require 'url'
 
 americano = require 'americano-cozy'
 Contact = americano.getModel 'Contact',
@@ -27,7 +28,9 @@ module.exports = (options) ->
         doc.getPublicURL (err, url) =>
             return cb err if err
 
-            url += '?key=' + rule.key
+            urlObject = urlHelpers.parse url
+            url.query = key: rule.key
+            url = urlObject.format()
 
             emailOptions = {doc, url, rule}
             async.parallel [
