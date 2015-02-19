@@ -60,7 +60,8 @@ else
                   = ' ' + t('perm') + possible_permissions[keys[0]]
 
                 a.clearance-btn.pull-right.revoke(
-                    data-key=key, title=t("revoke")): i.icon-remove
+                    data-key=key, title=t("revoke"))
+                  i.fa.fa-trash
                 a.clearance-btn.pull-right.show-link(
                     data-key=key,title=t("see link"),href=makeURL(key))
-                  i.glyphicon.glyphicon-link
+                  i.fa.fa-link
