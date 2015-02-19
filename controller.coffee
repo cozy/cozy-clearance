@@ -46,7 +46,7 @@ module.exports = (options) ->
             return cb err if err
 
             urlObject = urlHelpers.parse url
-            url.query = key: rule.key
+            urlObject.query = key: rule.key
             url = urlObject.format()
 
             emailOptions = {doc, url, rule}
