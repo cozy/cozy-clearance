@@ -153,9 +153,10 @@ module.exports = class CozyClearanceModal extends Modal
 
     # Display the modal private mode.
     makePrivate: ->
-        @lastClearance = @model.get 'clearance'
-        @model.set clearance: []
-        @refresh()
+        if not isPrivateClearance()
+            @lastClearance = @model.get 'clearance'
+            @model.set clearance: []
+            @refresh()
 
     ## Helpers
 
