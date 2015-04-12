@@ -117,6 +117,7 @@ socketListener.process = (event) ->
    {doctype, operation, id} = event
    # ...
    contactCollection.handleRealtimeContactEvent event
+```
 
 ## Locales
 
