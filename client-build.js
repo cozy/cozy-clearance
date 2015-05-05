@@ -641,11 +641,13 @@ module.exports = CozyClearanceModal = (function(superClass) {
   };
 
   CozyClearanceModal.prototype.makePrivate = function() {
-    this.lastClearance = this.model.get('clearance');
-    this.model.set({
-      clearance: []
-    });
-    return this.refresh();
+    if (!isPrivateClearance()) {
+      this.lastClearance = this.model.get('clearance');
+      this.model.set({
+        clearance: []
+      });
+      return this.refresh();
+    }
   };
 
   CozyClearanceModal.prototype.makeURL = function(key) {
@@ -696,8 +698,12 @@ module.exports = CozyClearanceModal = (function(superClass) {
             return _this.$el.modal('hide');
           } else {
             return request('POST', "clearance/" + _this.model.id + "/send", clearances, {
-              error: function() {
-                return Modal.error(t('mail not send'));
+              error: function(error, res) {
+                if (error.responseText.indexOf('postfix-') !== -1) {
+                  return Modal.error(t('postfix error'));
+                } else {
+                  return Modal.error(t('mail not sent'));
+                }
               },
               success: function(data) {
                 return _this.$el.modal('hide');

@@ -204,7 +204,11 @@ module.exports = class CozyClearanceModal extends Modal
                 if not sendmail then @$el.modal 'hide'
                 else
                     request 'POST', "clearance/#{@model.id}/send", clearances,
-                        error: -> Modal.error(t 'mail not send')
+                        error: (error, res) =>
+                            if error.responseText.indexOf('postfix-') isnt -1
+                                Modal.error(t('postfix error'))
+                            else
+                                Modal.error(t 'mail not sent')
                         success: (data) => @$el.modal 'hide'
 
     # Returns data to save.
