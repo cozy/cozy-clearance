@@ -13,7 +13,7 @@ module.exports = (input, onGuestAdded, extrafilter) ->
     # contact typeahead
     input.typeahead
         source: (query) ->
-            regexp = new RegExp(query)
+            regexp = new RegExp query, 'i'
             contacts = contactCollection.filter (contact) ->
                 contact.match regexp
             items = []
