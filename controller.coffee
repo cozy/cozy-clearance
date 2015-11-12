@@ -54,6 +54,7 @@ module.exports = (options) ->
                 (cb) -> mailSubject emailOptions, cb
                 (cb) -> mailTemplate emailOptions, cb
             ], (err, results) ->
+                return cb err if err
                 [subject, htmlContent] = results
                 emailInfo =
                     to: rule.email
