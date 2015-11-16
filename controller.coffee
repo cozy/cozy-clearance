@@ -42,7 +42,7 @@ module.exports = (options) ->
     sendMail = (doc, key, cb) ->
         rule = doc.clearance.filter((rule) -> rule.key is key)[0]
 
-        doc.getPublicURL (err, url) =>
+        doc.getPublicURL (err, url) ->
             return cb err if err
 
             urlObject = urlHelpers.parse url
@@ -54,12 +54,16 @@ module.exports = (options) ->
                 (cb) -> mailSubject emailOptions, cb
                 (cb) -> mailTemplate emailOptions, cb
             ], (err, results) ->
+                return cb err if err
                 [subject, htmlContent] = results
                 emailInfo =
                     to: rule.email
                     subject: subject
                     content: url
                     html: htmlContent
+
+                if options.attachments
+                    emailInfo.attachments = options.attachments
 
                 CozyAdapter.sendMailFromUser emailInfo, cb
 
@@ -85,8 +89,8 @@ module.exports = (options) ->
                 return rule
 
             req.doc.updateAttributes clearance: newClearance, (err) ->
-                    return next err if err
-                    res.send req.doc
+                return next err if err
+                res.send req.doc
 
     out.getEmailsFromContactFields =  (contact) ->
         emails = contact.datapoints?.filter (dp) -> dp.name is 'email'

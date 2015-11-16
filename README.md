@@ -65,6 +65,7 @@ clearance = require 'cozy-clearance'
 clearanceCtl = clearance.controller
     mailSubject: (options) -> # options.doc , options.url
     mailTemplate: (options) -> # options.doc , options.url
+    attachments: optional array of attachments
 
 'docid':
     param: # fetch and save in req.doc
