@@ -35,7 +35,6 @@ class Modal extends Backbone.View
 
     onYes: ->
         @close()
-        @cb true
 
     close: ->
         return if @closing
@@ -62,6 +61,7 @@ class Modal extends Backbone.View
         container = $('<div class="modal-content">').append head, body, foot
         container = $('<div class="modal-dialog">').append container
         $("body").append @$el.append container
+        @cb true
 
     renderContent: -> @content
 
