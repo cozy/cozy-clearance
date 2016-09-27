@@ -200,7 +200,8 @@ Modal = (function(superClass) {
   };
 
   Modal.prototype.onYes = function() {
-    return this.close();
+    this.close();
+    return this.cb(true);
   };
 
   Modal.prototype.close = function() {
@@ -240,8 +241,7 @@ Modal = (function(superClass) {
     }
     container = $('<div class="modal-content">').append(head, body, foot);
     container = $('<div class="modal-dialog">').append(container);
-    $("body").append(this.$el.append(container));
-    return this.cb(true);
+    return $("body").append(this.$el.append(container));
   };
 
   Modal.prototype.renderContent = function() {
@@ -583,15 +583,16 @@ module.exports = CozyClearanceModal = (function(superClass) {
     this._firstFocus(clearance);
     if (this.isPublicClearance()) {
       this.$('.public-url').show();
-      return $('.email-hint').hide();
+      $('.email-hint').hide();
     } else {
       this.$('.public-url').hide();
       if (this.isPrivateClearance()) {
-        return $('.email-hint').hide();
+        $('.email-hint').hide();
       } else {
-        return $('.email-hint').show();
+        $('.email-hint').show();
       }
     }
+    return this.doSave();
   };
 
   CozyClearanceModal.prototype._checkToggleButtonState = function(clearance) {
@@ -694,9 +695,7 @@ module.exports = CozyClearanceModal = (function(superClass) {
       success: (function(_this) {
         return function(data) {
           _this.model.trigger('change', _this.model);
-          if (!sendmail) {
-            return _this.$el.modal('hide');
-          } else {
+          if (sendmail) {
             return request('POST', "clearance/" + _this.model.id + "/send", clearances, {
               error: function(error, res) {
                 if (error.responseText.indexOf('postfix-') !== -1) {
@@ -704,9 +703,6 @@ module.exports = CozyClearanceModal = (function(superClass) {
                 } else {
                   return Modal.error(t('mail not sent'));
                 }
-              },
-              success: function(data) {
-                return _this.$el.modal('hide');
               }
             });
           }
