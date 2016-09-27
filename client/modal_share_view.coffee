@@ -114,6 +114,9 @@ module.exports = class CozyClearanceModal extends Modal
             else
                 $('.email-hint').show()
 
+        # auto-saving state (enable direct share with no need to save before)
+        @doSave()
+
     # Change the toggled button state depending on current clearance.
     _checkToggleButtonState: (clearance) ->
         if typeof(clearance) is "object" and clearance.length is 0
@@ -201,15 +204,14 @@ module.exports = class CozyClearanceModal extends Modal
                 # force rerender of the view because this request
                 # doesn't trigger the set
                 @model.trigger 'change', @model
-                if not sendmail then @$el.modal 'hide'
-                else
+
+                if sendmail
                     request 'POST', "clearance/#{@model.id}/send", clearances,
                         error: (error, res) =>
                             if error.responseText.indexOf('postfix-') isnt -1
                                 Modal.error(t('postfix error'))
                             else
                                 Modal.error(t 'mail not sent')
-                        success: (data) => @$el.modal 'hide'
 
     # Returns data to save.
     saveData: ->
@@ -335,4 +337,3 @@ module.exports = class CozyClearanceModal extends Modal
 
             else
                 @doSave false
-
