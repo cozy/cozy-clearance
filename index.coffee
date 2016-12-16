@@ -9,8 +9,11 @@ exports.check = (model, permission, req, callback) ->
     if not model.clearance or model.clearance.length is 0
         return callback null, false
 
-    if model.clearance is 'public' and permission is 'r'
+    if model.clearance is 'public'
+      if permission is 'r'
         return callback null, true
+      else
+        return callback null, false
 
     if model.clearance is 'publicrw'
         return callback null, true
